@@ -11,3 +11,5 @@
     <InputField></InputField>
   </div>
 </template>
+
+<script setup lang="ts"></script>
