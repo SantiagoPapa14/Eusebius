@@ -1,4 +1,4 @@
-function getDateInScraperFormat(): string {
+function getDateInScraperFormat() {
   // Format (MMDDYYYY) For example (04142003 is my birthday)
   const date = new Date();
   const year = date.getFullYear().toString().slice(2);
@@ -7,7 +7,7 @@ function getDateInScraperFormat(): string {
   return `${month}${day}${year}`;
 }
 
-async function getOrdinaryReadings(dateInFormat: string) {
+async function getOrdinaryReadings(dateInFormat) {
   const response = await fetch(
     `https://bible.usccb.org/bible/readings/${dateInFormat}.cfm`
   );
@@ -39,5 +39,9 @@ async function getOrdinaryReadings(dateInFormat: string) {
   };
 }
 
-const today = getDateInScraperFormat();
-getOrdinaryReadings(today).then((res) => console.log(res));
+getOrdinaryReadings(getDateInScraperFormat()).then((res) => console.log(res));
+
+module.exports = {
+  getDateInScraperFormat,
+  getOrdinaryReadings,
+};
