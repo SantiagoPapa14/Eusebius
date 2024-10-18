@@ -1,9 +1,8 @@
 const express = require("express");
 const { getTodaysReadings } = require("./scripts/readingScraper");
-const latinBible = require("./constants/latin/VULG.json");
-const englishBible = require("./constants/english/CPDV.json");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const { populateReadings } = require("./scripts/bibleLibrary");
 require("dotenv").config();
 
 // Create an Express app
@@ -17,20 +16,15 @@ app.use(cors());
 
 // Simple route
 app.get("/readings", async (req, res) => {
-  const readings = await getTodaysReadings();
-  res.json(readings);
-});
-
-app.get("/bible", async (req, res) => {
-  var { book, chapter, verses, language } = req.body;
-  verses = JSON.parse(verses);
-  const bible = language == "english" ? englishBible : latinBible;
-  const result = bible.books
-    .find((b) => b.name == book)
-    .chapters[chapter - 1].verses.filter(
-      (v) => v.verse <= verses.end && v.verse >= verses.start
-    );
-  res.json(result);
+  const { translated, includeContent } = req.query;
+  const isTranslated = translated === "true";
+  const doIncludeContent = includeContent === "true";
+  const reading = await getTodaysReadings();
+  if (doIncludeContent) {
+    await populateReadings(reading, isTranslated);
+  } else {
+    res.json(reading);
+  }
 });
 
 // Start server
