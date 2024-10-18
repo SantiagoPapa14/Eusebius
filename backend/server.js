@@ -1,8 +1,5 @@
 const express = require("express");
-const {
-  getDateInScraperFormat,
-  getOrdinaryReadings,
-} = require("./scripts/readingScraper");
+const { getTodaysReadings } = require("./scripts/readingScraper");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 require("dotenv").config();
@@ -18,8 +15,7 @@ app.use(cors());
 
 // Simple route
 app.get("/readings", async (req, res) => {
-  const today = getDateInScraperFormat();
-  const readings = await getOrdinaryReadings(today);
+  const readings = await getTodaysReadings();
   res.json(readings);
 });
 
