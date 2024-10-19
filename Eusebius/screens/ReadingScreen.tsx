@@ -163,11 +163,19 @@ const ReadingScreen = () => {
                 color={isFirstVerse ? "white" : "black"} // Disable color
               />
             </TouchableOpacity>
-            <Text className="flex-1 text-lg text-center">{`${
-              readings[selectedReading].book
-            } ${readings[selectedReading].chapter}:${
-              readings[selectedReading].verses.start + selectedVerse
-            }`}</Text>
+            <Animated.View
+              style={{
+                opacity: fadeAnim,
+              }}
+              className="flex-1"
+            >
+              <Text className="flex text-lg items-center text-center">{`${
+                readings[selectedReading].book
+              } ${readings[selectedReading].chapter}:${
+                readings[selectedReading].verses.start + selectedVerse
+              }`}</Text>
+            </Animated.View>
+
             <TouchableOpacity
               className="mx-2"
               disabled={isLastVerse || isAnimating}
@@ -207,19 +215,39 @@ const ReadingScreen = () => {
               className="flex-1 items-center justify-center h-20"
               onPress={() => handleChangeReading("psalm")}
             >
-              <Text>Psalm</Text>
+              <Text
+                className={
+                  selectedReading === "psalm" ? "font-bold text-base" : ""
+                }
+              >
+                Psalm
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               className="flex-1 items-center justify-center h-20"
               onPress={() => handleChangeReading("gospel")}
             >
-              <Text>Gospel</Text>
+              <Text
+                className={
+                  selectedReading === "gospel" ? "font-bold text-base" : ""
+                }
+              >
+                Gospel
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               className="flex-1 items-center justify-center h-20"
               onPress={() => handleChangeReading("firstReading")}
             >
-              <Text>Reading</Text>
+              <Text
+                className={
+                  selectedReading === "firstReading"
+                    ? "font-bold text-base"
+                    : ""
+                }
+              >
+                Reading
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
