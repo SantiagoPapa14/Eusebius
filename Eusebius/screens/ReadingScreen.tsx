@@ -8,6 +8,7 @@ import {
   Easing,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import SkeletonLoader from "../components/SkeletonLoader";
 
 const ReadingScreen = () => {
   const [readings, setReadings] = useState([]);
@@ -103,9 +104,50 @@ const ReadingScreen = () => {
 
   if (loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-gbGray">
-        <Text className="text-lg text-center">Loading...</Text>
-      </View>
+      <ImageBackground
+        source={require("../assets/MichaelWpp.jpg")}
+        className="flex-1"
+        resizeMode="cover"
+      >
+        <View className="flex-1 bg-gray-100 opacity-95">
+          <View className="flex-1 h-screen items-center justify-center bg-gbGray">
+            <View className="flex-1 items-center justify-center w-screen mt-10 pr-5 pl-5">
+              <SkeletonLoader></SkeletonLoader>
+            </View>
+
+            <View className="flex-row justify-center items-center rounded-full bg-white h-20 w-3/4">
+              <TouchableOpacity className="mx-2">
+                <Icon name="arrow-back" size={30} color={"white"} />
+              </TouchableOpacity>
+              <View className="flex-1">
+                <Text className="flex text-lg items-center text-center">
+                  Loading...
+                </Text>
+              </View>
+
+              <TouchableOpacity className="mx-2">
+                <Icon name="arrow-forward" size={30} color={"white"} />
+              </TouchableOpacity>
+            </View>
+
+            <View className="flex-1 items-center justify-center w-screen mb-10 pr-5 pl-5">
+              <SkeletonLoader></SkeletonLoader>
+            </View>
+
+            <View className="flex-row justify-center items-center bg-white h-20 w-screen">
+              <TouchableOpacity className="flex-1 items-center justify-center h-20">
+                <Text>Psalm</Text>
+              </TouchableOpacity>
+              <TouchableOpacity className="flex-1 items-center justify-center h-20">
+                <Text className="font-bold text-base">Gospel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity className="flex-1 items-center justify-center h-20">
+                <Text>Reading</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </ImageBackground>
     );
   }
 
