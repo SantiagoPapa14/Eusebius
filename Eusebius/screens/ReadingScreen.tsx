@@ -1,25 +1,50 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, ImageBackground } from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ImageBackground,
+  Animated,
+  Easing,
+} from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 const ReadingScreen = () => {
-  const [latinReadings, setLatinReadings] = React.useState({});
-  const [englishReadings, setEnglishReadings] = React.useState({});
-  const [error, setError] = useState(null);
+  const [readings, setReadings] = useState([]);
+  const [selectedReading, setSelectedReading] = useState("gospel");
+  const [selectedVerse, setSelectedVerse] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [verse, setVerse] = useState(0);
+  const [error, setError] = useState(null);
+  const [isAnimating, setIsAnimating] = useState(false); // Track animation state
+
+  const slideAnim = useRef(new Animated.Value(0)).current; // For slide effect
+  const fadeAnim = useRef(new Animated.Value(1)).current; // For fade effect
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const readingsResponse = await fetch(
-          `http://10.0.0.55:3000/readings?translated=false&includeContent=true`
-        );
-        if (!readingsResponse.ok) {
+        const response = await fetch("http://10.0.0.55:3000/readings");
+        if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        const readingsJson = await readingsResponse.json();
-        setLatinReadings(readingsJson);
+        const readingsData = await response.json();
+        for (const [key, value] of Object.entries(readingsData)) {
+          if (value) {
+            const latinReadingContent = await fetch(
+              `http://10.0.0.55:3000/bible?book=${value.book}&chapter=${value.chapter}&verses=${value.verses.start}-${value.verses.end}`
+            );
+            readingsData[key].latinContent = await latinReadingContent.json();
+          }
+          if (value) {
+            const englishReadingContent = await fetch(
+              `http://10.0.0.55:3000/bible?book=${value.book}&chapter=${value.chapter}&verses=${value.verses.start}-${value.verses.end}&translated=true`
+            );
+            readingsData[key].englishContent =
+              await englishReadingContent.json();
+          }
+        }
+
+        setReadings(readingsData);
       } catch (error: any) {
         setError(error.message);
       } finally {
@@ -30,13 +55,72 @@ const ReadingScreen = () => {
     fetchData();
   }, []);
 
-  if (error) {
-    return <Text>Error: {error}</Text>; // Render error state
-  }
+  const slideToNextVerse = (direction: string) => {
+    if (isAnimating) return; // Prevent sliding if animation is in progress
+    setIsAnimating(true); // Lock sliding
+    const toValue = direction === "prev" ? 400 : -400; // Slide right or left
+    Animated.timing(slideAnim, {
+      toValue, // Use positive for next and negative for prev
+      duration: 300,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: true,
+    }).start(() => {
+      // Update verse
+      setSelectedVerse((prev) => (direction === "next" ? prev + 1 : prev - 1));
+      slideAnim.setValue(-toValue); // Reset for smooth transition
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }).start(() => {
+        setIsAnimating(false); // Unlock sliding after animation completes
+      }); // Slide back to center
+    });
+  };
+
+  const handleChangeReading = (readingType: string) => {
+    if (isAnimating) return; // Prevent changing readings during animation
+    setIsAnimating(true);
+    // Fade out
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setSelectedReading(readingType);
+      setSelectedVerse(0);
+      // Fade back in
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => {
+        setIsAnimating(false);
+      });
+    });
+  };
 
   if (loading) {
-    return <Text>Loading...</Text>; // Render loading state
+    return (
+      <View className="flex-1 items-center justify-center bg-gbGray">
+        <Text className="text-lg text-center">Loading...</Text>
+      </View>
+    );
   }
+
+  if (error) {
+    return (
+      <View className="flex-1 items-center justify-center bg-gbGray">
+        <Text className="text-lg text-center">{error}</Text>
+      </View>
+    );
+  }
+
+  const isFirstVerse = selectedVerse === 0;
+  const isLastVerse =
+    readings[selectedReading].verses.start + selectedVerse >=
+    readings[selectedReading].verses.end;
 
   return (
     <ImageBackground
@@ -46,34 +130,95 @@ const ReadingScreen = () => {
     >
       <View className="flex-1 bg-gray-100 opacity-95">
         <View className="flex-1 h-screen items-center justify-center bg-gbGray">
-          <View className="flex-1 items-center justify-center w-screen mt-10">
+          {/* Animated Latin Content (Sliding and Fading) */}
+          <Animated.View
+            style={{
+              opacity: fadeAnim,
+              transform: [{ translateX: slideAnim }],
+            }}
+            className="flex-1 items-center justify-center w-screen mt-10 pr-5 pl-5"
+          >
             <Text className="text-lg text-center">
-              {JSON.stringify(latinReadings.gospel.verses.content)}
+              {
+                readings[selectedReading].latinContent[Number(selectedVerse)]
+                  .text
+              }
             </Text>
-          </View>
+          </Animated.View>
+
+          {/* Verse Navigation */}
           <View className="flex-row justify-center items-center rounded-full bg-white h-20 w-3/4">
-            <TouchableOpacity className="mx-2">
-              <Icon name="arrow-back" size={30} color="#000" />
+            <TouchableOpacity
+              className="mx-2"
+              disabled={isFirstVerse || isAnimating}
+              onPress={() => {
+                if (!isFirstVerse) {
+                  slideToNextVerse("prev");
+                }
+              }}
+            >
+              <Icon
+                name="arrow-back"
+                size={30}
+                color={isFirstVerse ? "white" : "black"} // Disable color
+              />
             </TouchableOpacity>
-            <Text className="flex-1 text-lg text-center">2 Timothy 4:11</Text>
-            <TouchableOpacity className="mx-2">
-              <Icon name="arrow-forward" size={30} color="#000" />
+            <Text className="flex-1 text-lg text-center">{`${
+              readings[selectedReading].book
+            } ${readings[selectedReading].chapter}:${
+              readings[selectedReading].verses.start + selectedVerse
+            }`}</Text>
+            <TouchableOpacity
+              className="mx-2"
+              disabled={isLastVerse || isAnimating}
+              onPress={() => {
+                if (!isLastVerse) {
+                  slideToNextVerse("next");
+                }
+              }}
+            >
+              <Icon
+                name="arrow-forward"
+                size={30}
+                color={isLastVerse ? "white" : "black"} // Disable color
+              />
             </TouchableOpacity>
           </View>
-          <View className="flex-1 items-center justify-center w-screen mb-10">
+
+          {/* Animated English Content (Sliding and Fading) */}
+          <Animated.View
+            style={{
+              opacity: fadeAnim,
+              transform: [{ translateX: slideAnim }],
+            }}
+            className="flex-1 items-center justify-center w-screen mb-10 pr-5 pl-5"
+          >
             <Text className="text-lg text-center">
-              Luke alone is with me. Take Mark and bring him with you; for he is
-              useful to me in the ministry.
+              {
+                readings[selectedReading].englishContent[Number(selectedVerse)]
+                  .text
+              }
             </Text>
-          </View>
+          </Animated.View>
+
+          {/* Reading Selector (Fade effect) */}
           <View className="flex-row justify-center items-center bg-white h-20 w-screen">
-            <TouchableOpacity className="flex-1 items-center justify-center h-20">
+            <TouchableOpacity
+              className="flex-1 items-center justify-center h-20"
+              onPress={() => handleChangeReading("psalm")}
+            >
               <Text>Psalm</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="flex-1 items-center justify-center h-20">
+            <TouchableOpacity
+              className="flex-1 items-center justify-center h-20"
+              onPress={() => handleChangeReading("gospel")}
+            >
               <Text>Gospel</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="flex-1 items-center justify-center h-20">
+            <TouchableOpacity
+              className="flex-1 items-center justify-center h-20"
+              onPress={() => handleChangeReading("firstReading")}
+            >
               <Text>Reading</Text>
             </TouchableOpacity>
           </View>
