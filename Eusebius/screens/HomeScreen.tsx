@@ -6,24 +6,14 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
+import Toast from "react-native-toast-message";
 
-const MenuButton: React.FC<{ page: string; iconName: string }> = ({
-  page,
-  iconName,
-}) => {
-  const navigation = useNavigation(); // Make sure to import and use useNavigation from react-navigation
-
-  return (
-    <TouchableOpacity
-      className="flex-row h-20 justify-center items-center bg-white rounded-full mx-10 pl-10"
-      onPress={() => navigation.navigate(page)}
-    >
-      <Icon name={iconName} size={60} color={"black"} />
-      <Text className="flex-1 ml-10 text-4xl">{page}</Text>
-    </TouchableOpacity>
-  );
+const showToast = (message: string, type: string) => {
+  Toast.show({
+    type: type,
+    text1: message,
+  });
 };
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -33,29 +23,79 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         source={require("../assets/MichaelWpp.jpg")}
         className="flex-1"
         resizeMode="cover"
-        style={{ opacity: 0.1 }}
+        style={{ opacity: 0.2 }}
       />
       <View
-        className="flex-1 flex justify-center space-y-10 pt-10 pb-20"
+        className="w-screen h-screen"
         style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
       >
-        <View className="flex-1 justify-center items-center bg-white rounded-full mx-5 px-10 border">
+        <View className="h-1/5 mt-28">
           <Image
-            source={require("../assets/eusebiusLogo.png")}
+            source={require("../assets/LogoHQ.png")}
             className="w-full h-full object-cover rounded-full"
           />
         </View>
-        <View className="flex-1">
-          <MenuButton page={"Readings"} iconName={"book-open"} />
-        </View>
-        <View className="flex-1">
-          <MenuButton page={"Professor"} iconName={"user"} />
-        </View>
-        <View className="flex-1">
-          <MenuButton page={"Review"} iconName={"trending-up"} />
-        </View>
-        <View className="flex-1">
-          <MenuButton page={"Knowledge"} iconName={"archive"} />
+        <View className="flex-1 flex items-center mt-8 mb-32 space-y-10">
+          <View className="w-full flex flex-row justify-center items-center space-x-10">
+            <TouchableOpacity
+              className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
+              onPress={() => navigation.navigate("Readings")}
+              style={{
+                elevation: 5,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.5,
+              }}
+            >
+              <Icon name={"book-open"} size={80} color={"black"} />
+              <Text className="text-2xl">Readings</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
+              onPress={() => showToast("Functionality Coming Soon!", "error")}
+              style={{
+                elevation: 5,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.5,
+              }}
+            >
+              <Icon name={"user"} size={80} color={"black"} />
+              <Text className="text-2xl">Professor</Text>
+            </TouchableOpacity>
+          </View>
+          <View className="w-full flex flex-row justify-center items-center space-x-10">
+            <TouchableOpacity
+              className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
+              onPress={() => showToast("Functionality Coming Soon!", "error")}
+              style={{
+                elevation: 5,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.5,
+              }}
+            >
+              <Icon name={"trending-up"} size={80} color={"black"} />
+              <Text className="text-2xl">Review</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
+              onPress={() => showToast("Functionality Coming Soon!", "error")}
+              style={{
+                elevation: 5,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.5,
+              }}
+            >
+              <Icon name={"archive"} size={80} color={"black"} />
+              <Text className="text-2xl">Knowledge</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>

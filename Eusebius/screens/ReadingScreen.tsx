@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import SkeletonLoader from "../components/SkeletonLoader";
+import Toast from "react-native-toast-message";
 
 const ReadingScreen = () => {
   const [readings, setReadings] = useState([]);
@@ -81,7 +82,11 @@ const ReadingScreen = () => {
   };
 
   const handleChangeReading = (readingType: string) => {
-    if (isAnimating) return; // Prevent changing readings during animation
+    if (readings[readingType] === null) {
+      showToast(`Sorry, no ${readingType} available.`, "error");
+      return;
+    }
+    if (isAnimating) return;
     setIsAnimating(true);
     // Fade out
     Animated.timing(fadeAnim, {
@@ -89,8 +94,8 @@ const ReadingScreen = () => {
       duration: 300,
       useNativeDriver: true,
     }).start(() => {
+      setSelectedVerse(0); // Prevent changing readings during animation
       setSelectedReading(readingType);
-      setSelectedVerse(0);
       // Fade back in
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -99,6 +104,13 @@ const ReadingScreen = () => {
       }).start(() => {
         setIsAnimating(false);
       });
+    });
+  };
+
+  const showToast = (message: string, type: string) => {
+    Toast.show({
+      type: type,
+      text1: message,
     });
   };
 
