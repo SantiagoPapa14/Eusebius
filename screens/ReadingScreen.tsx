@@ -14,6 +14,7 @@ import {
   Easing,
   StyleSheet,
   Linking,
+  PanResponder,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import SkeletonLoader from "../components/SkeletonLoader";
@@ -41,7 +42,6 @@ const ReadingScreen = () => {
 
   // callbacks
   const handleSheetChanges = useCallback((index: number) => {
-    console.log("handleSheetChanges", index);
     if (index === -1) {
       setDefinitionIsOpen(false);
     }
@@ -95,6 +95,25 @@ const ReadingScreen = () => {
       }); // Slide back to center
     });
   };
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        return Math.abs(gestureState.dx) > 30; // Set threshold for detecting a swipe
+      },
+      onPanResponderRelease: (evt, gestureState) => {
+        if (gestureState.dx > 0) {
+          if (!isFirstVerse) {
+            slideToNextVerse("prev");
+          }
+        } else {
+          if (!isLastVerse) {
+            slideToNextVerse("next");
+          }
+        }
+      },
+    })
+  ).current;
 
   const handleChangeReading = (readingType: string) => {
     if (readings[readingType] === null) {
@@ -338,7 +357,7 @@ const ReadingScreen = () => {
   };
 
   return (
-    <View className="flex-1">
+    <View className="flex-1" {...panResponder.panHandlers}>
       <ImageBackground
         source={require("../assets/MichaelWpp.jpg")}
         className="flex-1"
@@ -435,48 +454,50 @@ const ReadingScreen = () => {
               }
             </Text>
           </Animated.View>
-          {/* Reading Selector (Fade effect) */}
+        </View>
+        {/* Reading Selector */}
+        <View className="flex-row justify-center items-center bg-white h-20 w-screen">
+          <TouchableOpacity
+            className="flex-1 items-center justify-center h-20"
+            onPress={() => handleChangeReading("psalm")}
+          >
+            <Text
+              className={
+                selectedReading === "psalm" ? "font-bold text-base" : ""
+              }
+            >
+              Psalm
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="flex-1 items-center justify-center h-20"
+            onPress={() => handleChangeReading("gospel")}
+          >
+            <Text
+              className={
+                selectedReading === "gospel" ? "font-bold text-base" : ""
+              }
+            >
+              Gospel
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="flex-1 items-center justify-center h-20"
+            onPress={() => handleChangeReading("firstReading")}
+          >
+            <Text
+              className={
+                selectedReading === "firstReading" ? "font-bold text-base" : ""
+              }
+            >
+              {readings.secondReading == null ? "Reading" : "Reading 1"}
+            </Text>
+          </TouchableOpacity>
+          <SecondReadingComponent />
         </View>
       </View>
-      <DefinitionCoponent />
 
-      <View className="flex-row justify-center items-center bg-white h-20 w-screen">
-        <TouchableOpacity
-          className="flex-1 items-center justify-center h-20"
-          onPress={() => handleChangeReading("psalm")}
-        >
-          <Text
-            className={selectedReading === "psalm" ? "font-bold text-base" : ""}
-          >
-            Psalm
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="flex-1 items-center justify-center h-20"
-          onPress={() => handleChangeReading("gospel")}
-        >
-          <Text
-            className={
-              selectedReading === "gospel" ? "font-bold text-base" : ""
-            }
-          >
-            Gospel
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="flex-1 items-center justify-center h-20"
-          onPress={() => handleChangeReading("firstReading")}
-        >
-          <Text
-            className={
-              selectedReading === "firstReading" ? "font-bold text-base" : ""
-            }
-          >
-            {readings.secondReading == null ? "Reading" : "Reading 1"}
-          </Text>
-        </TouchableOpacity>
-        <SecondReadingComponent />
-      </View>
+      <DefinitionCoponent />
     </View>
   );
 };
