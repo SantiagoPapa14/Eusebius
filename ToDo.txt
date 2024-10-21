@@ -1,1 +1,2 @@
-Start working on frontend to display readings
+Make the scraper better at interpratating psalm readings
+Definitions of each word on touch

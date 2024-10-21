@@ -188,6 +188,27 @@ const ReadingScreen = () => {
     readings[selectedReading].verses.start + selectedVerse >=
     readings[selectedReading].verses.end;
 
+  const SecondReadingComponent = () => {
+    if (readings.secondReading !== null) {
+      return (
+        <TouchableOpacity
+          className="flex-1 items-center justify-center h-20"
+          onPress={() => handleChangeReading("secondReading")}
+        >
+          <Text
+            className={
+              selectedReading === "secondReading" ? "font-bold text-base" : ""
+            }
+          >
+            Reading 2
+          </Text>
+        </TouchableOpacity>
+      );
+    } else {
+      return;
+    }
+  };
+
   return (
     <View className="flex-1">
       <ImageBackground
@@ -317,9 +338,10 @@ const ReadingScreen = () => {
                     : ""
                 }
               >
-                Reading
+                {readings.secondReading == null ? "Reading" : "Reading 1"}
               </Text>
             </TouchableOpacity>
+            <SecondReadingComponent />
           </View>
         </View>
       </View>
