@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import {
   View,
   Text,
@@ -6,12 +12,16 @@ import {
   ImageBackground,
   Animated,
   Easing,
+  StyleSheet,
+  Linking,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import SkeletonLoader from "../components/SkeletonLoader";
 import Toast from "react-native-toast-message";
 import { getReadingByItself } from "../scripts/webScraper";
 import { fetchVerses } from "../scripts/bibleLibrary";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 
 const ReadingScreen = () => {
   const [readings, setReadings] = useState([]);
@@ -23,6 +33,19 @@ const ReadingScreen = () => {
 
   const slideAnim = useRef(new Animated.Value(0)).current; // For slide effect
   const fadeAnim = useRef(new Animated.Value(1)).current; // For fade effect
+
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ["85%"], []);
+  const [definitionIsOpen, setDefinitionIsOpen] = useState(false);
+  const [definitionData, setDefinitionData] = useState(null);
+
+  // callbacks
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log("handleSheetChanges", index);
+    if (index === -1) {
+      setDefinitionIsOpen(false);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -209,6 +232,111 @@ const ReadingScreen = () => {
     }
   };
 
+  function replaceSpecialChars(str: string) {
+    const specialChars = {
+      æ: "ae",
+      Æ: "AE",
+      ø: "o",
+      Ø: "O",
+      å: "a",
+      Å: "A",
+      œ: "oe",
+      Œ: "OE",
+      þ: "th",
+      Þ: "TH",
+      ð: "d",
+      Ð: "D",
+      ü: "u",
+      Ü: "U",
+      ö: "o",
+      Ö: "O",
+      ß: "ss",
+      // Add other special characters here
+    };
+
+    return str.replace(
+      /æ|Æ|ø|Ø|å|Å|œ|Œ|þ|Þ|ð|Ð|ü|Ü|ö|Ö|ß/g,
+      (match) => specialChars[match]
+    );
+  }
+
+  const handleWordPress = async (word: string) => {
+    Toast.show({
+      type: "info",
+      text1: "Loading definition...",
+    });
+    // https://www.latin-is-simple.com/api/vocabulary/search/?query=WORD_GOES_HERE
+    const cleanWord = replaceSpecialChars(
+      word
+        .replaceAll(":", "")
+        .replaceAll(",", "")
+        .replaceAll(".", "")
+        .replaceAll(" ", "")
+    );
+
+    const url = `https://www.latin-is-simple.com/api/vocabulary/search/?query=${cleanWord}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    if (data.length === 0) {
+      Toast.show({
+        type: "error",
+        text1: "No translation found.",
+      });
+    } else {
+      setDefinitionData(data[0]);
+      await new Promise((r) => setTimeout(r, 500));
+      setDefinitionIsOpen(true);
+      Toast.hide();
+    }
+  };
+
+  const renderText = (text: string) => {
+    return text.split(" ").map((word, index) => (
+      <TouchableOpacity key={index} onPress={() => handleWordPress(word)}>
+        <Text className="text-lg">{word} </Text>
+      </TouchableOpacity>
+    ));
+  };
+
+  const DefinitionCoponent = () => {
+    if (definitionIsOpen) {
+      {
+        return (
+          <GestureHandlerRootView style={styles.container}>
+            <BottomSheet
+              ref={bottomSheetRef}
+              onChange={handleSheetChanges}
+              snapPoints={snapPoints}
+              enablePanDownToClose={true} // Allowing the sheet to be dragged down to close
+            >
+              <BottomSheetView style={styles.contentContainer}>
+                <View className="flex-1 flex items-center">
+                  <Text className="text-3xl font-bold">
+                    {definitionData.short_name.charAt(0).toUpperCase() +
+                      definitionData.short_name.slice(1)}
+                  </Text>
+                  <Text className="text-lg">{definitionData.full_name}</Text>
+                  <Text className="text-lg italic">{`(${definitionData.type.label})`}</Text>
+                  <Text className="text-xl mt-10 text-center">
+                    {definitionData.translations_unstructured.en}
+                  </Text>
+                  <TouchableOpacity className="mt-10">
+                    <Text
+                      onPress={() => Linking.openURL(definitionData.url)}
+                      className="text-lg text-center text-blue-500 italic"
+                    >
+                      Press here for a more in depth definition!
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </BottomSheetView>
+            </BottomSheet>
+          </GestureHandlerRootView>
+        );
+      }
+    }
+  };
+
   return (
     <View className="flex-1">
       <ImageBackground
@@ -217,9 +345,16 @@ const ReadingScreen = () => {
         resizeMode="cover"
         style={{ opacity: 0.1 }}
       />
+
       <View
         className="flex-1 flex justify-center"
-        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}
       >
         <View className="flex-1 h-screen items-center justify-center bg-gbGray">
           {/* Animated Latin Content (Sliding and Fading) */}
@@ -231,10 +366,10 @@ const ReadingScreen = () => {
             className="flex-1 items-center justify-center w-screen mt-10 pr-5 pl-5"
           >
             <Text className="text-lg text-center">
-              {
+              {renderText(
                 readings[selectedReading].latinContent[Number(selectedVerse)]
                   .Content
-              }
+              )}
             </Text>
           </Animated.View>
 
@@ -300,53 +435,65 @@ const ReadingScreen = () => {
               }
             </Text>
           </Animated.View>
-
           {/* Reading Selector (Fade effect) */}
-          <View className="flex-row justify-center items-center bg-white h-20 w-screen">
-            <TouchableOpacity
-              className="flex-1 items-center justify-center h-20"
-              onPress={() => handleChangeReading("psalm")}
-            >
-              <Text
-                className={
-                  selectedReading === "psalm" ? "font-bold text-base" : ""
-                }
-              >
-                Psalm
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="flex-1 items-center justify-center h-20"
-              onPress={() => handleChangeReading("gospel")}
-            >
-              <Text
-                className={
-                  selectedReading === "gospel" ? "font-bold text-base" : ""
-                }
-              >
-                Gospel
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="flex-1 items-center justify-center h-20"
-              onPress={() => handleChangeReading("firstReading")}
-            >
-              <Text
-                className={
-                  selectedReading === "firstReading"
-                    ? "font-bold text-base"
-                    : ""
-                }
-              >
-                {readings.secondReading == null ? "Reading" : "Reading 1"}
-              </Text>
-            </TouchableOpacity>
-            <SecondReadingComponent />
-          </View>
         </View>
+      </View>
+      <DefinitionCoponent />
+
+      <View className="flex-row justify-center items-center bg-white h-20 w-screen">
+        <TouchableOpacity
+          className="flex-1 items-center justify-center h-20"
+          onPress={() => handleChangeReading("psalm")}
+        >
+          <Text
+            className={selectedReading === "psalm" ? "font-bold text-base" : ""}
+          >
+            Psalm
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="flex-1 items-center justify-center h-20"
+          onPress={() => handleChangeReading("gospel")}
+        >
+          <Text
+            className={
+              selectedReading === "gospel" ? "font-bold text-base" : ""
+            }
+          >
+            Gospel
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="flex-1 items-center justify-center h-20"
+          onPress={() => handleChangeReading("firstReading")}
+        >
+          <Text
+            className={
+              selectedReading === "firstReading" ? "font-bold text-base" : ""
+            }
+          >
+            {readings.secondReading == null ? "Reading" : "Reading 1"}
+          </Text>
+        </TouchableOpacity>
+        <SecondReadingComponent />
       </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  contentContainer: {
+    flex: 1,
+    padding: 36,
+  },
+});
 
 export default ReadingScreen;

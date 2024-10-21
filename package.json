@@ -9,9 +9,13 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@gorhom/bottom-sheet": "^5.0.4",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",
     "expo": "~51.0.28",
+    "expo-asset": "~10.0.10",
+    "expo-file-system": "~17.0.1",
+    "expo-sqlite": "~14.0.6",
     "expo-status-bar": "~1.12.1",
     "nativewind": "^2.0.11",
     "node-ts": "^6.1.3",
@@ -22,9 +26,8 @@
     "react-native-toast-message": "^2.2.1",
     "react-native-vector-icons": "^10.2.0",
     "ts-node": "^10.9.2",
-    "expo-sqlite": "~14.0.6",
-    "expo-file-system": "~17.0.1",
-    "expo-asset": "~10.0.10"
+    "react-native-reanimated": "~3.10.1",
+    "react-native-gesture-handler": "~2.16.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -1,2 +1,1 @@
 Make the scraper better at interpratating psalm readings
-Definitions of each word on touch
