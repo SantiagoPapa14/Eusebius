@@ -1,3 +1,0 @@
-The reason why I got these two json files is that [CrossWire](https://www.crosswire.org/) uploaded sword files for almost all translations,
-but not JSON files, that's where [Wasdin](https://github.com/wasdin/SWORD-to-JSON) comes in to save the day with this simple python script that
-literally did in 15 seconds what I've been trying to do for hours.
