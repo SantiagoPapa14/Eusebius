@@ -1,3 +1,5 @@
+import { massReadingsType } from "../constants/EusebiusTypes";
+
 function parseReference(reference: string) {
   if (reference) {
     const regex = /(\d*\s*[A-Za-z]+)\s+(\d+):(\d+)(?:-(\d+))?/;
@@ -17,7 +19,7 @@ function parseReference(reference: string) {
   return null;
 }
 
-export async function getReadingByItself() {
+export async function getReadingByItself(): Promise<massReadingsType> {
   const date = new Date();
   const year = date.getFullYear().toString().slice(2);
   const month = date.getMonth() + 1;
@@ -40,18 +42,18 @@ export async function getReadingByItself() {
     )[1]
     .split(`</h4>\n`)[1];
   const result = {
-    firstReading: parseReference(
-      rawHtmlData.split("Reading 1, <em>")[1].split("</em>")[0]
-    ),
     psalm: parseReference(
       rawHtmlData.split("Responsorial Psalm, <em>")[1].split("</em>")[0]
     ),
     gospel: parseReference(
       rawHtmlData.split("Gospel, <em>")[1].split("</em>")[0]
     ),
+    firstReading: parseReference(
+      rawHtmlData.split("Reading 1, <em>")[1].split("</em>")[0]
+    ),
     secondReading: parseReference(
       rawHtmlData?.split("Reading 2, <em>")[1]?.split("</em>")[0]
     ),
   };
-  return result;
+  return result as massReadingsType;
 }
