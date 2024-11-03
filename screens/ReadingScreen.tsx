@@ -53,6 +53,16 @@ const ReadingScreen = () => {
 
   const slideToNextVerse = (direction: "prev" | "next") => {
     if (isAnimating) return;
+
+    if (direction === "prev" && selectedVerse === 0) return;
+
+    if (
+      direction === "next" &&
+      readings[selectedReading]?.verses.start + selectedVerse >=
+        readings[selectedReading]?.verses.end
+    )
+      return;
+
     setIsAnimating(true);
 
     const toValue = direction === "prev" ? 400 : -400;
@@ -73,19 +83,17 @@ const ReadingScreen = () => {
     });
   };
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gestureState) =>
-        Math.abs(gestureState.dx) > 30,
-      onPanResponderRelease: (_, gestureState) => {
-        if (gestureState.dx > 0) {
-          slideToNextVerse("prev");
-        } else if (gestureState.dx < 0) {
-          slideToNextVerse("next");
-        }
-      },
-    })
-  ).current;
+  const panResponder = PanResponder.create({
+    onMoveShouldSetPanResponder: (_, gestureState) =>
+      Math.abs(gestureState.dx) > 30,
+    onPanResponderRelease: (_, gestureState) => {
+      if (gestureState.dx > 0) {
+        slideToNextVerse("prev");
+      } else if (gestureState.dx < 0) {
+        slideToNextVerse("next");
+      }
+    },
+  });
 
   const handleChangeReading = (readingType: keyof massReadingsType) => {
     if (isAnimating) return;
@@ -129,6 +137,7 @@ const ReadingScreen = () => {
     !readings[selectedReading].englishContent
   )
     return null;
+
   return (
     <View className="flex-1" {...panResponder.panHandlers}>
       <ImageBackground
