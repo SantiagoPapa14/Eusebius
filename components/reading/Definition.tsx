@@ -7,6 +7,8 @@ import {
   StyleSheet,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Icon from "react-native-vector-icons/Feather";
+import { addWord } from "../../scripts/wordManager";
 
 interface Props {
   definitionData: any;
@@ -33,6 +35,7 @@ const Definition: React.FC<Props> = ({
       >
         <BottomSheetView style={styles.contentContainer}>
           <View className="flex-1 flex items-center">
+            {/* Definition */}
             <Text className="text-3xl font-bold">
               {definitionData.short_name}
             </Text>
@@ -41,13 +44,32 @@ const Definition: React.FC<Props> = ({
             <Text className="text-xl mt-10 text-center">
               {definitionData.translations_unstructured.en}
             </Text>
+            {/* Divider */}
+            <View className="w-full h-px bg-gray-300 mt-10" />
+            {/* Save word */}
+            <Text className="text-xl font-bold mt-5">
+              Already know this one?
+            </Text>
             <TouchableOpacity
-              className="mt-10"
-              onPress={() => Linking.openURL(definitionData.url)}
+              onPress={() => addWord(definitionData.short_name)}
+              className="flex flex-row items-center justify-center w-2/3 h-10 bg-gray-100 rounded-full shadow-lg mt-10"
             >
-              <Text className="text-lg text-center text-blue-500 italic">
-                Press here for a more in-depth definition!
-              </Text>
+              <Icon name={"archive"} size={20} color={"black"} />
+              <Text className="text-lg ml-2">Save to knowledge</Text>
+            </TouchableOpacity>
+            {/* Divider */}
+            <View className="w-full h-px bg-gray-300 mt-10" />
+
+            {/* Go to definition page */}
+            <Text className="text-xl font-bold mt-5">
+              Not making much sense?
+            </Text>
+            <TouchableOpacity
+              onPress={() => Linking.openURL(definitionData.url)}
+              className="flex flex-row items-center justify-center w-2/3 h-10 bg-gray-100 rounded-full shadow-lg mt-10"
+            >
+              <Icon name={"search"} size={20} color={"black"} />
+              <Text className="text-lg ml-2">Full definition</Text>
             </TouchableOpacity>
           </View>
         </BottomSheetView>
