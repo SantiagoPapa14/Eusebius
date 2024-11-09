@@ -8,7 +8,8 @@ import {
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/Feather";
-import { addWord } from "../../scripts/wordManager";
+import { addWord } from "../../scripts/sqliteLibrary";
+import { showMessage } from "react-native-flash-message";
 
 interface Props {
   definitionData: any;
@@ -40,9 +41,8 @@ const Definition: React.FC<Props> = ({
               {definitionData.short_name}
             </Text>
             <Text className="text-lg">{definitionData.full_name}</Text>
-            <Text className="text-lg italic">{`(${definitionData.type.label})`}</Text>
             <Text className="text-xl mt-10 text-center">
-              {definitionData.translations_unstructured.en}
+              {definitionData.translation}
             </Text>
             {/* Divider */}
             <View className="w-full h-px bg-gray-300 mt-10" />
@@ -51,7 +51,17 @@ const Definition: React.FC<Props> = ({
               Already know this one?
             </Text>
             <TouchableOpacity
-              onPress={() => addWord(definitionData.short_name)}
+              onPress={async () => {
+                const result = await addWord(
+                  definitionData.short_name,
+                  definitionData.translation
+                );
+                if (result)
+                  showMessage({ message: "Word saved", type: "info" });
+                else
+                  showMessage({ message: "Already known!", type: "warning" });
+                setDefinitionIsOpen(false);
+              }}
               className="flex flex-row items-center justify-center w-2/3 h-10 bg-gray-100 rounded-full shadow-lg mt-10"
             >
               <Icon name={"archive"} size={20} color={"black"} />

@@ -1,6 +1,5 @@
 import { Text, Animated, TouchableOpacity } from "react-native";
-import Toast from "react-native-toast-message";
-
+import { hideMessage, showMessage } from "react-native-flash-message";
 interface LatinTextProps {
   content: string;
   fadeAnim: Animated.Value;
@@ -31,9 +30,9 @@ const handleWordPress = async (
   setDefinitionData: any,
   setDefinitionIsOpen: any
 ) => {
-  Toast.show({
+  showMessage({
+    message: "Loading definition...",
     type: "info",
-    text1: "Loading definition...",
   });
 
   const cleanWord = replaceSpecialChars(
@@ -44,20 +43,17 @@ const handleWordPress = async (
       .replaceAll(" ", "")
   );
 
-  const url = `https://www.latin-is-simple.com/api/vocabulary/search/?query=${cleanWord}`;
+  const url = `https://anastrophe.uchicago.edu/morpho-api//detail/${cleanWord}?dicos=all`;
   const response = await fetch(url);
   const data = await response.json();
-  if (data.length === 0) {
-    Toast.show({
-      type: "error",
-      text1: "No translation found.",
-    });
-  } else {
-    setDefinitionData(data[0]);
-    await new Promise((r) => setTimeout(r, 500));
-    setDefinitionIsOpen(true);
-    Toast.hide();
-  }
+  setDefinitionData({
+    short_name: data.shortdef[0].split(", ")[0],
+    full_name: data.headword,
+    translation: data.shortdef[0].split(", ")[1],
+  });
+  await new Promise((r) => setTimeout(r, 500));
+  setDefinitionIsOpen(true);
+  hideMessage();
 };
 
 function replaceSpecialChars(str: string) {

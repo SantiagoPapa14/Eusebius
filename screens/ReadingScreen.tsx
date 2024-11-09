@@ -10,7 +10,7 @@ import {
 import BottomSheet from "@gorhom/bottom-sheet";
 
 import { getReadingByItself } from "../scripts/readingScraper";
-import { populateReadings } from "../scripts/bibleLibrary";
+import { populateReadings } from "../scripts/sqliteLibrary";
 import { massReadingsType, readingType } from "../constants/EusebiusTypes";
 import ReadingSelector from "../components/reading/ReadingSelector";
 import VerseNavigation from "../components/reading/VerseSelector";

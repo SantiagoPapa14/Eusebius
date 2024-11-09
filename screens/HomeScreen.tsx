@@ -7,14 +7,7 @@ import {
   Image,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
-import Toast from "react-native-toast-message";
-
-const showToast = (message: string, type: string) => {
-  Toast.show({
-    type: type,
-    text1: message,
-  });
-};
+import { showMessage } from "react-native-flash-message";
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   return (
@@ -53,13 +46,20 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             </TouchableOpacity>
             <TouchableOpacity
               className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
-              onPress={() => showToast("Functionality Coming Soon!", "error")}
+              onPress={() =>
+                showMessage({
+                  message: "Functionality Coming Soon!",
+                  type: "warning",
+                })
+              }
               style={{
                 elevation: 5,
                 shadowColor: "#000",
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.25,
                 shadowRadius: 3.5,
+                backgroundColor: "gray",
+                opacity: 0.5,
               }}
             >
               <Icon name={"user"} size={80} color={"black"} />
@@ -69,13 +69,20 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           <View className="w-full flex flex-row justify-center items-center space-x-10">
             <TouchableOpacity
               className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
-              onPress={() => showToast("Functionality Coming Soon!", "error")}
+              onPress={() =>
+                showMessage({
+                  message: "Functionality Coming Soon!",
+                  type: "warning",
+                })
+              }
               style={{
                 elevation: 5,
                 shadowColor: "#000",
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.25,
                 shadowRadius: 3.5,
+                backgroundColor: "gray",
+                opacity: 0.5,
               }}
             >
               <Icon name={"trending-up"} size={80} color={"black"} />
@@ -83,7 +90,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             </TouchableOpacity>
             <TouchableOpacity
               className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
-              onPress={() => showToast("Functionality Coming Soon!", "error")}
+              onPress={() => navigation.navigate("Knowledge")}
               style={{
                 elevation: 5,
                 shadowColor: "#000",

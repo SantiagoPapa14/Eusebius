@@ -3,7 +3,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import HomeScreen from "./screens/HomeScreen";
 import ReadingScreen from "./screens/ReadingScreen";
-import Toast from "react-native-toast-message";
+import KnowledgeScreen from "./screens/KnowledgeScreen";
+import FlashMessage from "react-native-flash-message";
 
 const Stack = createNativeStackNavigator();
 
@@ -18,9 +19,10 @@ export default function App() {
             options={{ headerShown: false }}
           />
           <Stack.Screen name="Readings" component={ReadingScreen} />
+          <Stack.Screen name="Knowledge" component={KnowledgeScreen} />
         </Stack.Navigator>
       </NavigationContainer>
-      <Toast />
+      <FlashMessage position="bottom" />
     </>
   );
 }
