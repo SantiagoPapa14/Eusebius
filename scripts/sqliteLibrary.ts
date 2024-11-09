@@ -6,22 +6,6 @@ import { Asset } from "expo-asset";
 let db: any = null;
 
 async function openDatabase(): Promise<SQLite.SQLiteDatabase> {
-  if (
-    !(await FileSystem.getInfoAsync(FileSystem.documentDirectory + "SQLite"))
-      .exists
-  ) {
-    await FileSystem.makeDirectoryAsync(
-      FileSystem.documentDirectory + "SQLite"
-    );
-  }
-  const asset = await Asset.fromModule(
-    require("../assets/eusebius.db")
-  ).downloadAsync();
-
-  await FileSystem.copyAsync({
-    from: asset.localUri ? asset.localUri : asset.uri,
-    to: FileSystem.documentDirectory + "SQLite/eusebius.db",
-  });
   return await SQLite.openDatabaseAsync("eusebius.db");
 }
 

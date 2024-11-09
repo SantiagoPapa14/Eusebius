@@ -14,7 +14,7 @@ type TableData = {
 };
 
 const renderItem = ({ item }: { item: TableData }) => (
-  <View key={item.word} className="flex-row py-2 border-b border-gray-300">
+  <View className="flex-row py-2 border-b border-gray-300">
     <Text className="flex-1 text-center text-lg">{item.word}</Text>
     <Text className="flex-1 text-center text-lg">{item.definition}</Text>
   </View>
@@ -83,7 +83,7 @@ const KnowledgeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           <FlatList
             data={data}
             renderItem={renderItem}
-            keyExtractor={(item) => item.key}
+            keyExtractor={(item) => item.word}
           />
         </View>
       </View>
