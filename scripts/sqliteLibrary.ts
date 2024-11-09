@@ -5,8 +5,26 @@ import { Asset } from "expo-asset";
 
 let db: any = null;
 
+const dbName = "eusebius.db";
+const dbPath = `${FileSystem.documentDirectory}SQLite/${dbName}`;
+
 async function openDatabase(): Promise<SQLite.SQLiteDatabase> {
-  return await SQLite.openDatabaseAsync("eusebius.db");
+  // Check if database already exists in the document directory
+  const fileInfo = await FileSystem.getInfoAsync(dbPath);
+
+  if (!fileInfo.exists) {
+    // If the database file is not in document directory, copy it from the asset folder
+    await FileSystem.makeDirectoryAsync(
+      `${FileSystem.documentDirectory}SQLite`,
+      { intermediates: true }
+    );
+    await FileSystem.downloadAsync(
+      Asset.fromModule(require("../assets/eusebius.db")).uri,
+      dbPath
+    );
+  }
+
+  return await SQLite.openDatabaseAsync(dbName);
 }
 
 export const fetchVerses = async (
