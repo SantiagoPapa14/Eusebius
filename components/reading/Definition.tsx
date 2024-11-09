@@ -75,7 +75,11 @@ const Definition: React.FC<Props> = ({
               Not making much sense?
             </Text>
             <TouchableOpacity
-              onPress={() => Linking.openURL(definitionData.url)}
+              onPress={() =>
+                Linking.openURL(
+                  `https://www.latin-is-simple.com/en/vocabulary/search/?q=${definitionData.short_name}`
+                )
+              }
               className="flex flex-row items-center justify-center w-2/3 h-10 bg-gray-100 rounded-full shadow-lg mt-10"
             >
               <Icon name={"search"} size={20} color={"black"} />

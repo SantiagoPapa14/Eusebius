@@ -19,6 +19,7 @@ import LatinText from "../components/reading/LatinText";
 import EnglishText from "../components/reading/EnglishText";
 import SkeletonReader from "../components/reading/SkeletonReader";
 import Definition from "../components/reading/Definition";
+import { showMessage } from "react-native-flash-message";
 
 const ReadingScreen = () => {
   const [readings, setReadings] = useState<massReadingsType>();
@@ -154,7 +155,8 @@ const ReadingScreen = () => {
           <LatinText
             content={
               readings[selectedReading].latinContent[selectedVerse]
-                .Content as string
+                ? readings[selectedReading].latinContent[selectedVerse].Content
+                : ""
             }
             fadeAnim={fadeAnim}
             slideAnim={slideAnim}
@@ -180,7 +182,9 @@ const ReadingScreen = () => {
           <EnglishText
             content={
               readings[selectedReading].englishContent[selectedVerse]
-                .Content as string
+                ? readings[selectedReading].englishContent[selectedVerse]
+                    .Content
+                : ""
             }
             fadeAnim={fadeAnim}
             slideAnim={slideAnim}
