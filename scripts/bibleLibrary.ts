@@ -32,7 +32,6 @@ export const fetchVerses = async (
     `SELECT * FROM ${language}Bible WHERE book = ? AND chapter = ? AND verse BETWEEN ? AND ?`,
     [reading.book, reading.chapter, reading.verses.start, reading.verses.end]
   );
-  await db.closeAsync();
   return allRows as Array<string>;
 };
 
