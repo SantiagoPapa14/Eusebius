@@ -1,3 +1,2 @@
-Make the scraper better at interpratating psalm readings
-Refactor readings page.then( not be able to SWIPE past the last or first verse )
-Add save word function
+Make the scraper better at interpratating readings
+Better knowledge page (remove words, prettier display)
