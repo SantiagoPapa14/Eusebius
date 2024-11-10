@@ -78,3 +78,13 @@ export const getWords = async () => {
   const allRows = await db.getAllAsync("SELECT * FROM Word");
   return allRows;
 };
+
+export const deleteWord = async (word: string) => {
+  if (!db) {
+    db = await openDatabase();
+  }
+  const allRows = await db.getAllAsync("DELETE FROM Word WHERE word = ?", [
+    word,
+  ]);
+  return allRows;
+};

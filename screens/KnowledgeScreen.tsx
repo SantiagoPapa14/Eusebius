@@ -5,20 +5,15 @@ import {
   Text,
   FlatList,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
-import { getWords } from "../scripts/sqliteLibrary";
+import Icon from "react-native-vector-icons/Feather";
+import { getWords, deleteWord } from "../scripts/sqliteLibrary";
 
 type TableData = {
   word: string;
   definition: string;
 };
-
-const renderItem = ({ item }: { item: TableData }) => (
-  <View className="flex-row py-2 border-b border-gray-300">
-    <Text className="flex-1 text-center text-lg">{item.word}</Text>
-    <Text className="flex-1 text-center text-lg">{item.definition}</Text>
-  </View>
-);
 
 const KnowledgeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [data, setData] = useState<TableData[]>([]); // state to hold the fetched data
@@ -42,6 +37,28 @@ const KnowledgeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     fetchData(); // Call the async function
   }, []);
 
+  const renderItem = ({ item }: { item: TableData }) => (
+    <View className="flex-row mt-1 mb-1 items-center">
+      <View className="bg-white py-2 opacity-80 m-1 rounded-lg border shadow border-gray-200 flex-1 flex-row">
+        <Text className="flex-1 text-center text-lg">
+          {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
+        </Text>
+      </View>
+      <View className="bg-white py-2 opacity-80 m-1 rounded-lg border shadow border-gray-200 flex-1 flex-row">
+        <Text className="flex-1 text-center text-lg">{item.definition}</Text>
+      </View>
+      <TouchableOpacity
+        className="w-10 h-10 m-1 bg-white rounded-full border shadow border-gray-200 flex justify-center items-center"
+        onPress={() => {
+          deleteWord(item.word);
+          setData(data.filter((word) => word.word !== item.word));
+        }}
+      >
+        <Icon name={"trash-2"} size={18} color={"red"} />
+      </TouchableOpacity>
+    </View>
+  );
+
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center">
@@ -54,6 +71,37 @@ const KnowledgeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     return (
       <View className="flex-1 justify-center items-center">
         <Text className="text-red-500">{`Error: ${error}`}</Text>
+      </View>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <View className="flex-1">
+        <ImageBackground
+          source={require("../assets/MichaelWpp.jpg")}
+          className="flex-1"
+          resizeMode="cover"
+          style={{ opacity: 0.05 }}
+        />
+        <View
+          className="w-screen h-screen"
+          style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+        >
+          <View className="p-4">
+            {/* Table Header */}
+            <View className="flex-row bg-gray-100 py-2 border-b border-gray-300">
+              <Text className="flex-1 font-bold text-center text-lg">Word</Text>
+              <Text className="flex-1 font-bold text-center text-lg">
+                Definition
+              </Text>
+            </View>
+          </View>
+          <Text className="text-center text-gray-500 text-lg mt-5">
+            You can click any words within readings to read the definition and
+            save it!
+          </Text>
+        </View>
       </View>
     );
   }
@@ -72,15 +120,15 @@ const KnowledgeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       >
         <View className="p-4">
           {/* Table Header */}
-          <View className="flex-row bg-gray-100 py-2 border-b border-gray-300">
+          <View className="flex-row bg-gray-100 py-2 border-b border-gray-300 mr-12">
             <Text className="flex-1 font-bold text-center text-lg">Word</Text>
             <Text className="flex-1 font-bold text-center text-lg">
               Definition
             </Text>
           </View>
 
-          {/* Table Rows */}
           <FlatList
+            className="mt-5"
             data={data}
             renderItem={renderItem}
             keyExtractor={(item) => item.word}

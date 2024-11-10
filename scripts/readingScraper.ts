@@ -2,12 +2,12 @@ import { massReadingsType } from "../constants/EusebiusTypes";
 
 function parseReference(reference: string) {
   if (reference) {
-    const regex = /(\d*\s*[A-Za-z]+)\s+(\d+):(\d+)(?:-(\d+))?/;
+    const regex = /(\d*\s*[A-Za-z]+\s*[A-Za-z]+)\s+(\d+):(\d+)(?:-(\d+))?/;
     const match = reference.match(regex);
 
     if (match) {
       return {
-        book: match[1].trim(),
+        book: match[1].trim().replace("First", "1").replace("Second", "2"),
         chapter: parseInt(match[2], 10),
         verses: {
           start: parseInt(match[3], 10),
