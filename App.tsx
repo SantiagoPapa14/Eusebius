@@ -5,6 +5,7 @@ import HomeScreen from "./screens/HomeScreen";
 import ReadingScreen from "./screens/ReadingScreen";
 import KnowledgeScreen from "./screens/KnowledgeScreen";
 import FlashMessage from "react-native-flash-message";
+import FlashcardScreen from "./screens/FlashcardScreen";
 import { enableScreens } from "react-native-screens";
 enableScreens();
 
@@ -22,6 +23,7 @@ export default function App() {
           />
           <Stack.Screen name="Readings" component={ReadingScreen} />
           <Stack.Screen name="Knowledge" component={KnowledgeScreen} />
+          <Stack.Screen name="Flashcards" component={FlashcardScreen} />
         </Stack.Navigator>
       </NavigationContainer>
       <FlashMessage position="bottom" />

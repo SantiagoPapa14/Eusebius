@@ -51,7 +51,7 @@ const handleWordPress = async (
     full_name: data.headword,
     translation: data.shortdef[0].split(", ")[1],
   });
-  await new Promise((r) => setTimeout(r, 500));
+  // await new Promise((r) => setTimeout(r, 500));
   setDefinitionIsOpen(true);
   hideMessage();
 };

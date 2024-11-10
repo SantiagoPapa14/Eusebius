@@ -69,24 +69,17 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           <View className="w-full flex flex-row justify-center items-center space-x-10">
             <TouchableOpacity
               className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
-              onPress={() =>
-                showMessage({
-                  message: "Functionality Coming Soon!",
-                  type: "warning",
-                })
-              }
+              onPress={() => navigation.navigate("Flashcards")}
               style={{
                 elevation: 5,
                 shadowColor: "#000",
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.25,
                 shadowRadius: 3.5,
-                backgroundColor: "gray",
-                opacity: 0.5,
               }}
             >
-              <Icon name={"trending-up"} size={80} color={"black"} />
-              <Text className="text-2xl">Review</Text>
+              <Icon name={"layers"} size={80} color={"black"} />
+              <Text className="text-2xl">Flashcards</Text>
             </TouchableOpacity>
             <TouchableOpacity
               className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
