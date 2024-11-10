@@ -5,6 +5,8 @@ import HomeScreen from "./screens/HomeScreen";
 import ReadingScreen from "./screens/ReadingScreen";
 import KnowledgeScreen from "./screens/KnowledgeScreen";
 import FlashMessage from "react-native-flash-message";
+import { enableScreens } from "react-native-screens";
+enableScreens();
 
 const Stack = createNativeStackNavigator();
 

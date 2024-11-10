@@ -1,2 +1,0 @@
-Make the scraper better at interpratating readings
-Better knowledge page (remove words, prettier display)
