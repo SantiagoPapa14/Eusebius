@@ -24,7 +24,14 @@ async function openDatabase(): Promise<SQLite.SQLiteDatabase> {
     );
   }
 
-  return await SQLite.openDatabaseAsync(dbName);
+  const dbConn = await SQLite.openDatabaseAsync(dbName);
+  await dbConn.runAsync(
+    `CREATE TABLE IF NOT EXISTS Word (
+      word TEXT PRIMARY KEY,
+      definition TEXT
+    )`
+  );
+  return dbConn;
 }
 
 export const fetchVerses = async (
