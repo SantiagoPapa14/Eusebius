@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,10 +6,13 @@ import {
   TouchableOpacity,
   FlatList,
   ImageBackground,
+  Animated,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import Markdown from "react-native-markdown-display";
 import { sendMessage, resetConversation } from "../scripts/geminiMiddleman";
+
+resetConversation();
 
 type message = {
   id: number;
@@ -18,7 +21,6 @@ type message = {
 };
 
 const ProfessorScreen = () => {
-  resetConversation();
   const [message, setMessage] = useState<string>("");
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [messages, setMessages] = useState<message[]>([
@@ -28,6 +30,9 @@ const ProfessorScreen = () => {
       sender: "bot",
     },
   ]);
+
+  const flatListRef = useRef<FlatList>(null); // Ref for FlatList
+  const typingAnimation = useRef(new Animated.Value(1)).current; // Animation for "Typing..." pulsing effect
 
   const handleSend = async () => {
     if (message.trim()) {
@@ -41,15 +46,50 @@ const ProfessorScreen = () => {
       });
 
       setMessage("");
+      flatListRef.current?.scrollToEnd({ animated: true });
+      // Show the typing indicator
+      setIsTyping(true);
+
+      // Start the pulsing animation
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(typingAnimation, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(typingAnimation, {
+            toValue: 0.5,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+
+      // Simulate the bot response (you can remove this in production)
       const response = await sendMessage(message);
 
       // Then, update the messages with the bot's response
       setMessages((prevMessages) => [
         ...prevMessages,
         { id: prevMessages.length + 1, text: response, sender: "bot" },
-      ]); // Clear the input field
+      ]);
+
+      // Hide the typing indicator
+      setIsTyping(false);
+
+      // Stop the pulsing animation
+      typingAnimation.stopAnimation();
+
+      // Scroll to the bottom
+      flatListRef.current?.scrollToEnd({ animated: true });
     }
   };
+
+  useEffect(() => {
+    // Scroll to the bottom when a new message is added
+    flatListRef.current?.scrollToEnd({ animated: true });
+  }, [messages]);
 
   return (
     <View className="flex-1">
@@ -65,8 +105,9 @@ const ProfessorScreen = () => {
       >
         <View className="flex-1">
           <FlatList
+            ref={flatListRef} // Attach the ref to the FlatList
             data={messages}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <View
                 className={`flex-row ${
@@ -86,6 +127,23 @@ const ProfessorScreen = () => {
             )}
             contentContainerStyle={{ flexGrow: 1, justifyContent: "flex-end" }}
           />
+
+          {/* Display Typing... if bot is typing */}
+          {isTyping && (
+            <View className="flex-row justify-start mb-4">
+              <View className="rounded-lg border border-gray-300 mx-4 bg-gray-200 p-4 max-w-[75%]">
+                <Animated.Text
+                  style={{
+                    color: "gray",
+                    fontSize: 16,
+                    opacity: typingAnimation,
+                  }}
+                >
+                  Typing...
+                </Animated.Text>
+              </View>
+            </View>
+          )}
 
           <View className="flex-row items-center bg-white border-t border-gray-300 p-4">
             <TextInput

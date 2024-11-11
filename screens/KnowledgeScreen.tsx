@@ -97,7 +97,7 @@ const KnowledgeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               </Text>
             </View>
           </View>
-          <Text className="text-center text-gray-500 text-lg mt-5">
+          <Text className="text-center text-gray-500 text-lg mt-5 mx-5">
             You can click any words within readings to read the definition and
             save it!
           </Text>
