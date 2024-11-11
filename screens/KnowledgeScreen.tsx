@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
-import { getWords, deleteWord } from "../scripts/sqliteLibrary";
 
 type TableData = {
   word: string;
@@ -25,7 +24,10 @@ const KnowledgeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const fetchData = async () => {
       try {
         // Example API call
-        const result = await getWords();
+        const response = await fetch(
+          `https://eusebiusbackend.onrender.com/words`
+        );
+        const result = await response.json();
         setData(result as TableData[]); // Set the data into the state
       } catch (error) {
         setError(error.message); // Set error if the fetch fails
@@ -49,8 +51,17 @@ const KnowledgeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       </View>
       <TouchableOpacity
         className="w-10 h-10 m-1 bg-white rounded-full border shadow border-gray-200 flex justify-center items-center"
-        onPress={() => {
-          deleteWord(item.word);
+        onPress={async () => {
+          const response = await fetch(
+            `https://eusebiusbackend.onrender.com/words`,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ word: item.word }),
+            }
+          );
           setData(data.filter((word) => word.word !== item.word));
         }}
       >

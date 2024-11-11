@@ -1,5 +1,4 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { getWords } from "./sqliteLibrary";
 
 let conversationHistory: string[] = [];
 let geminiAPIKey = "AIzaSyDJFgSpP_Z7FN_6YEPFUxQTFKssSlvfX2s";
@@ -12,7 +11,8 @@ export function resetConversation() {
 }
 
 async function primeConversation() {
-  const words = await getWords();
+  const response = await fetch(`https://eusebiusbackend.onrender.com/words`);
+  const words = await response.json();
   const primer = `Hello gemini, we will pretend that you are a latin professor (not a priest) in the "Eusebius Catholic Monastery".
 You must be ready to answer any doubts about the latin language, its grammar, cases, etc.
 It is important that you do not make your answers very long, and always be friendly torwards the student, try to include emojis in your answers.

@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import Flashcard from "../components/flashcard/Flashcard";
-import { getWords, deleteWord } from "../scripts/sqliteLibrary";
 
 type TableData = {
   word: string;
@@ -25,7 +24,10 @@ const FlashcardScreen = () => {
     // Create an async function to fetch the data
     const fetchData = async () => {
       try {
-        const result = await getWords();
+        const response = await fetch(
+          `https://eusebiusbackend.onrender.com/words`
+        );
+        const result = await response.json();
         const mixedData = result.sort(() => Math.random() - 0.5);
         setData(mixedData as TableData[]);
       } catch (error: any) {

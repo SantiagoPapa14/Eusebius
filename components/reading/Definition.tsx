@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/Feather";
-import { addWord } from "../../scripts/sqliteLibrary";
 import { showMessage } from "react-native-flash-message";
 
 interface Props {
@@ -52,11 +51,20 @@ const Definition: React.FC<Props> = ({
             </Text>
             <TouchableOpacity
               onPress={async () => {
-                const result = await addWord(
-                  definitionData.short_name,
-                  definitionData.translation
+                const response = await fetch(
+                  `https://eusebiusbackend.onrender.com/words/${definitionData.short_name}`,
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      word: definitionData.short_name,
+                      definition: definitionData.translation,
+                    }),
+                  }
                 );
-                if (result)
+                if (response.ok)
                   showMessage({ message: "Word saved", type: "info" });
                 else
                   showMessage({ message: "Already known!", type: "warning" });
