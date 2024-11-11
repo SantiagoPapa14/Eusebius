@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@gorhom/bottom-sheet": "^5.0.4",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",
@@ -17,18 +18,19 @@
     "expo-file-system": "~17.0.1",
     "expo-sqlite": "~14.0.6",
     "expo-status-bar": "~1.12.1",
+    "expo-updates": "~0.25.27",
     "nativewind": "^2.0.11",
     "react": "18.2.0",
     "react-native": "0.74.5",
     "react-native-flash-message": "^0.4.2",
     "react-native-gesture-handler": "~2.16.1",
+    "react-native-markdown-display": "^7.0.2",
     "react-native-reanimated": "~3.10.1",
     "react-native-reanimated-carousel": "^3.5.1",
     "react-native-screens": "3.31.1",
     "react-native-snap-carousel": "^3.9.1",
     "react-native-vector-icons": "^10.2.0",
-    "ts-node": "^10.9.2",
-    "expo-updates": "~0.25.27"
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -46,20 +46,13 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             </TouchableOpacity>
             <TouchableOpacity
               className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
-              onPress={() =>
-                showMessage({
-                  message: "Functionality Coming Soon!",
-                  type: "warning",
-                })
-              }
+              onPress={() => navigation.navigate("Professor")}
               style={{
                 elevation: 5,
                 shadowColor: "#000",
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.25,
                 shadowRadius: 3.5,
-                backgroundColor: "gray",
-                opacity: 0.5,
               }}
             >
               <Icon name={"user"} size={80} color={"black"} />
