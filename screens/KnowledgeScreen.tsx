@@ -52,14 +52,13 @@ const KnowledgeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <TouchableOpacity
         className="w-10 h-10 m-1 bg-white rounded-full border shadow border-gray-200 flex justify-center items-center"
         onPress={async () => {
-          const response = await fetch(
-            `https://eusebiusbackend.onrender.com/words`,
+          await fetch(
+            `https://eusebiusbackend.onrender.com/words/${item.word}`,
             {
               method: "DELETE",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ word: item.word }),
             }
           );
           setData(data.filter((word) => word.word !== item.word));
