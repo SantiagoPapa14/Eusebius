@@ -79,7 +79,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             </TouchableOpacity>
             <TouchableOpacity
               className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
-              onPress={() => navigation.navigate("Knowledge")}
+              onPress={() => navigation.navigate("Vocabulary")}
               style={{
                 elevation: 5,
                 shadowColor: "#000",
@@ -89,7 +89,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               }}
             >
               <Icon name={"archive"} size={80} color={"black"} />
-              <Text className="text-2xl">Knowledge</Text>
+              <Text className="text-2xl">Vocabulary</Text>
             </TouchableOpacity>
           </View>
           <TouchableOpacity

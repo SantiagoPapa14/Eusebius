@@ -15,7 +15,7 @@ type TableData = {
   definition: string;
 };
 
-const KnowledgeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { authState } = useAuth();
   const [data, setData] = useState<TableData[]>([]); // state to hold the fetched data
   const [loading, setLoading] = useState<boolean>(true); // loading state
@@ -118,8 +118,8 @@ const KnowledgeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             </View>
           </View>
           <Text className="text-center text-gray-500 text-lg mt-5 mx-5">
-            You can click any words within readings to read the definition and
-            save it!
+            You can click any words within readings to get the definition, there
+            you can also add it to your vocabulary and it will be saved here!
           </Text>
         </View>
       </View>
@@ -159,4 +159,4 @@ const KnowledgeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   );
 };
 
-export default KnowledgeScreen;
+export default VocabularyScreen;

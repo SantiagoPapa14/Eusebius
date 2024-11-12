@@ -46,10 +46,23 @@ const handleWordPress = async (
   const url = `https://anastrophe.uchicago.edu/morpho-api//detail/${cleanWord}?dicos=all`;
   const response = await fetch(url);
   const data = await response.json();
+  if (
+    data.shortdef[0].split(", ")[0].includes("No short definition found for")
+  ) {
+    data.shortdefParsed = data.shortdef[0]
+      .split(", ")[0]
+      .split("No short definition found for ")[1];
+
+    data.translationParsed =
+      "Sorry, no quick translation found. \n Go to full definition for more details.";
+  } else {
+    data.shortdefParsed = data.shortdef[0].split(", ")[0];
+    data.translationParsed = data.shortdef[0].split(", ")[1];
+  }
   setDefinitionData({
-    short_name: data.shortdef[0].split(", ")[0],
+    short_name: data.shortdefParsed,
     full_name: data.headword,
-    translation: data.shortdef[0].split(", ")[1],
+    translation: data.translationParsed,
   });
   // await new Promise((r) => setTimeout(r, 500));
   setDefinitionIsOpen(true);

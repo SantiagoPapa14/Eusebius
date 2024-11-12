@@ -10,10 +10,11 @@ import LoginScreen from "./screens/LoginScreen";
 
 import HomeScreen from "./screens/HomeScreen";
 import ReadingScreen from "./screens/ReadingScreen";
-import KnowledgeScreen from "./screens/KnowledgeScreen";
+import KnowledgeScreen from "./screens/VocabularyScreen";
 import FlashcardScreen from "./screens/FlashcardScreen";
 import ProfessorScreen from "./screens/ProfessorScreen";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import VocabularyScreen from "./screens/VocabularyScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,7 +40,7 @@ export const Layout = () => {
               options={{ headerShown: false }}
             />
             <Stack.Screen name="Readings" component={ReadingScreen} />
-            <Stack.Screen name="Knowledge" component={KnowledgeScreen} />
+            <Stack.Screen name="Vocabulary" component={VocabularyScreen} />
             <Stack.Screen name="Flashcards" component={FlashcardScreen} />
             <Stack.Screen name="Professor" component={ProfessorScreen} />
           </>

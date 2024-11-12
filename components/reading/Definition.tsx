@@ -48,7 +48,7 @@ const Definition: React.FC<Props> = ({
             <View className="w-full h-px bg-gray-300 mt-10" />
             {/* Save word */}
             <Text className="text-xl font-bold mt-5">
-              Already know this one?
+              Done studying this word?
             </Text>
             <TouchableOpacity
               onPress={async () => {
@@ -72,10 +72,10 @@ const Definition: React.FC<Props> = ({
                   showMessage({ message: "Already known!", type: "warning" });
                 setDefinitionIsOpen(false);
               }}
-              className="flex flex-row items-center justify-center w-2/3 h-10 bg-gray-100 rounded-full shadow-lg mt-10"
+              className="flex flex-row items-center justify-center space-x-2 w-3/4 h-10 bg-gray-200 rounded-full shadow-lg  mt-10"
             >
               <Icon name={"archive"} size={20} color={"black"} />
-              <Text className="text-lg ml-2">Save to knowledge</Text>
+              <Text className="text-lg ml-2">Add to your vocabulary</Text>
             </TouchableOpacity>
             {/* Divider */}
             <View className="w-full h-px bg-gray-300 mt-10" />
@@ -87,10 +87,10 @@ const Definition: React.FC<Props> = ({
             <TouchableOpacity
               onPress={() =>
                 Linking.openURL(
-                  `https://www.latin-is-simple.com/en/vocabulary/search/?q=${definitionData.short_name}`
+                  `https://logeion.uchicago.edu/${definitionData.short_name}`
                 )
               }
-              className="flex flex-row items-center justify-center w-2/3 h-10 bg-gray-100 rounded-full shadow-lg mt-10"
+              className="flex flex-row items-center justify-center w-2/3 h-10 bg-gray-200 rounded-full shadow-lg  mt-10"
             >
               <Icon name={"search"} size={20} color={"black"} />
               <Text className="text-lg ml-2">Full definition</Text>
