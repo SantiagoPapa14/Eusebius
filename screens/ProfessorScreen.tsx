@@ -13,8 +13,6 @@ import Markdown from "react-native-markdown-display";
 import { sendMessage, resetConversation } from "../scripts/geminiMiddleman";
 import { useAuth } from "../context/AuthContext";
 
-resetConversation();
-
 type message = {
   id: number;
   text: string;
@@ -92,6 +90,8 @@ const ProfessorScreen = () => {
     // Scroll to the bottom when a new message is added
     flatListRef.current?.scrollToEnd({ animated: true });
   }, [messages]);
+
+  resetConversation();
 
   return (
     <View className="flex-1">
