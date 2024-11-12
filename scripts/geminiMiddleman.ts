@@ -1,5 +1,11 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+interface wordType {
+  id: number;
+  word: string;
+  definition: string;
+}
+
 let conversationHistory: string[] = [];
 let geminiAPIKey = "AIzaSyDJFgSpP_Z7FN_6YEPFUxQTFKssSlvfX2s";
 
@@ -11,7 +17,7 @@ export function resetConversation() {
 }
 
 async function primeConversation(token: string) {
-  const response = await fetch(`https://eusebiusbackend.onrender.com/words`, {
+  const response = await fetch(`http://10.0.2.2:4000/words`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -24,7 +30,9 @@ You must be ready to answer any doubts about the latin language, its grammar, ca
 It is important that you do not make your answers very long, and always be friendly torwards the student, try to include emojis in your answers.
 You should not greet the student in the message, this is not the first message in the conversation.
 You will be given a list of words that the student knows, whenever possible try to vinculate your response with these words, but do not force them into the response.
-Here are the words: \n ${JSON.stringify(words.map((word) => word.word))}`;
+Here are the words: \n ${JSON.stringify(
+    words.map((word: wordType) => word.word)
+  )}`;
   conversationHistory.push(`You: ${primer}`);
   const result = await model.generateContent([conversationHistory.join("\n")]);
   const responseText = result.response.text();

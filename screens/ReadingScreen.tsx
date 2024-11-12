@@ -17,7 +17,6 @@ import LatinText from "../components/reading/LatinText";
 import EnglishText from "../components/reading/EnglishText";
 import SkeletonReader from "../components/reading/SkeletonReader";
 import Definition from "../components/reading/Definition";
-import { showMessage } from "react-native-flash-message";
 import { useAuth } from "../context/AuthContext";
 
 const ReadingScreen = () => {
@@ -40,7 +39,7 @@ const ReadingScreen = () => {
     const fetchData = async () => {
       try {
         const readingsData = await fetch(
-          "https://eusebiusbackend.onrender.com/readings/populated",
+          "http://10.0.2.2:4000/readings/populated",
           {
             method: "GET",
             headers: {
@@ -61,17 +60,28 @@ const ReadingScreen = () => {
     fetchData();
   }, []);
 
+  if (loading) return <SkeletonReader />;
+
+  if (error)
+    return (
+      <View className="flex-1 items-center justify-center">
+        <Text className="text-lg text-center">{error}</Text>
+      </View>
+    );
+
+  if (
+    !readings ||
+    !readings[selectedReading] ||
+    !readings[selectedReading].verses ||
+    !readings[selectedReading].latinContent ||
+    !readings[selectedReading].englishContent
+  )
+    return null;
+
   const slideToNextVerse = (direction: "prev" | "next") => {
     if (isAnimating) return;
-
-    if (direction === "prev" && selectedVerse === 0) return;
-
-    if (
-      direction === "next" &&
-      readings[selectedReading]?.verses.start + selectedVerse >=
-        readings[selectedReading]?.verses.end
-    )
-      return;
+    if (direction === "prev" && isFirstVerse()) return;
+    if (direction === "next" && isLastVerse()) return;
 
     setIsAnimating(true);
 
@@ -123,30 +133,21 @@ const ReadingScreen = () => {
     });
   };
 
-  function isFirstVerse(verse: number) {
-    return verse === 0;
+  function isFirstVerse() {
+    return selectedVerse === 0;
   }
 
-  function isLastVerse(verse: number, start: number, end: number) {
-    return start + verse >= end;
-  }
-
-  if (loading) return <SkeletonReader />;
-  if (error)
+  function isLastVerse() {
+    if (
+      !readings ||
+      !readings[selectedReading] ||
+      !readings[selectedReading].latinContent
+    )
+      return false;
     return (
-      <View className="flex-1 items-center justify-center">
-        <Text className="text-lg text-center">{error}</Text>
-      </View>
+      selectedVerse === readings?.[selectedReading].latinContent.length - 1 ?? 0
     );
-
-  if (
-    !readings ||
-    !readings[selectedReading] ||
-    !readings[selectedReading].verses ||
-    !readings[selectedReading].latinContent ||
-    !readings[selectedReading].englishContent
-  )
-    return null;
+  }
 
   return (
     <View className="flex-1" {...panResponder.panHandlers}>
@@ -173,12 +174,8 @@ const ReadingScreen = () => {
             setDefinitionIsOpen={setDefinitionIsOpen}
           />
           <VerseNavigation
-            isFirstVerse={isFirstVerse(selectedVerse)}
-            isLastVerse={isLastVerse(
-              selectedVerse,
-              readings[selectedReading].verses.start,
-              readings[selectedReading].verses.end
-            )}
+            isFirstVerse={isFirstVerse()}
+            isLastVerse={isLastVerse()}
             onPrevious={() => slideToNextVerse("prev")}
             onNext={() => slideToNextVerse("next")}
           >

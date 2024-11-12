@@ -1,4 +1,5 @@
 import { View, Text, TouchableOpacity } from "react-native";
+import React, { FC } from "react";
 import type { massReadingsType } from "../../constants/EusebiusTypes";
 type MassReadingKeys = keyof massReadingsType;
 

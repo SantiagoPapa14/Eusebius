@@ -5,13 +5,15 @@ export type dbVerseType = {
   Content: string;
 };
 
+export type verseType = {
+  chapter: number;
+  start: number;
+  end: number;
+};
+
 export type readingType = {
   book: string;
-  chapter: number;
-  verses: {
-    start: number;
-    end: number;
-  };
+  verses: Array<verseType>;
   latinContent?: Array<dbVerseType>;
   englishContent?: Array<dbVerseType>;
 };

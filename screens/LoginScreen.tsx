@@ -15,11 +15,11 @@ const LoginScreen = () => {
   const { onLogin, onRegister } = useAuth();
 
   const login = async () => {
-    const result = await onLogin!(email, password);
+    await onLogin!(email, password);
   };
 
   const register = async () => {
-    const result = await onRegister!(email, password);
+    await onRegister!(email, password);
   };
 
   return (

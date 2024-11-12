@@ -9,7 +9,7 @@ interface AuthProps {
 }
 
 const TOKEN_KEY = "api_token";
-export const API_URL = "https://eusebiusbackend.onrender.com";
+export const API_URL = "http://10.0.2.2:4000";
 const AuthContext = createContext<AuthProps>({});
 
 export const useAuth = () => {

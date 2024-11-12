@@ -1,4 +1,5 @@
 import { Text, Animated } from "react-native";
+import React, { FC } from "react";
 import { readingType } from "../../constants/EusebiusTypes";
 
 interface CurrentVerseProps {
@@ -12,6 +13,7 @@ const CurrentVerse: React.FC<CurrentVerseProps> = ({
   selectedVerse,
   fadeAnim,
 }) => {
+  if (!reading || !reading.latinContent) return null;
   return (
     <Animated.View
       style={{
@@ -19,9 +21,7 @@ const CurrentVerse: React.FC<CurrentVerseProps> = ({
       }}
       className="flex-1"
     >
-      <Text className="flex text-lg items-center text-center">{`${
-        reading.book
-      } ${reading.chapter}:${reading.verses.start + selectedVerse}`}</Text>
+      <Text className="flex text-lg items-center text-center">{`${reading.book} ${reading.latinContent[selectedVerse].Chapter}:${reading.latinContent[selectedVerse].Verse}`}</Text>
     </Animated.View>
   );
 };

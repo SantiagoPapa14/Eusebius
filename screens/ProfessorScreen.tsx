@@ -69,7 +69,7 @@ const ProfessorScreen = () => {
       ).start();
 
       // Simulate the bot response (you can remove this in production)
-      const response = await sendMessage(message, authState.token);
+      const response = await sendMessage(message, authState?.token ?? "");
 
       // Then, update the messages with the bot's response
       setMessages((prevMessages) => [

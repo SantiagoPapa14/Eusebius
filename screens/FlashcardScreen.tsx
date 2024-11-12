@@ -26,16 +26,13 @@ const FlashcardScreen = () => {
     // Create an async function to fetch the data
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `https://eusebiusbackend.onrender.com/words`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${authState?.token}`,
-            },
-          }
-        );
+        const response = await fetch(`http://10.0.2.2:4000/words`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authState?.token}`,
+          },
+        });
         const result = await response.json();
         const mixedData = result.sort(() => Math.random() - 0.5);
         setData(mixedData as TableData[]);
