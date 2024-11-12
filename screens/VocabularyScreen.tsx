@@ -26,13 +26,16 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const fetchData = async () => {
       try {
         // Example API call
-        const response = await fetch(`http://10.0.2.2:4000/words`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authState?.token}`,
-          },
-        });
+        const response = await fetch(
+          `https://eusebiusbackend.onrender.com/words`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authState?.token}`,
+            },
+          }
+        );
         const result = await response.json();
         setData(result as TableData[]); // Set the data into the state
       } catch (error) {
@@ -58,13 +61,16 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <TouchableOpacity
         className="w-10 h-10 m-1 bg-white rounded-full border shadow border-gray-200 flex justify-center items-center"
         onPress={async () => {
-          await fetch(`http://10.0.2.2:4000/words/${item.word}`, {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${authState?.token}`,
-            },
-          });
+          await fetch(
+            `https://eusebiusbackend.onrender.com/words/${item.word}`,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${authState?.token}`,
+              },
+            }
+          );
           setData(data.filter((word) => word.word !== item.word));
         }}
       >
