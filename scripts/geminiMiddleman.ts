@@ -10,8 +10,14 @@ export function resetConversation() {
   conversationHistory = [];
 }
 
-async function primeConversation() {
-  const response = await fetch(`https://eusebiusbackend.onrender.com/words`);
+async function primeConversation(token: string) {
+  const response = await fetch(`https://eusebiusbackend.onrender.com/words`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
   const words = await response.json();
   const primer = `Hello gemini, we will pretend that you are a latin professor (not a priest) in the "Eusebius Catholic Monastery".
 You must be ready to answer any doubts about the latin language, its grammar, cases, etc.
@@ -25,9 +31,9 @@ Here are the words: \n ${JSON.stringify(words.map((word) => word.word))}`;
   conversationHistory.push(`Model: ${responseText}`);
 }
 
-export async function sendMessage(newPrompt: string) {
+export async function sendMessage(newPrompt: string, token: string) {
   if (conversationHistory.length === 0) {
-    await primeConversation();
+    await primeConversation(token);
   }
   conversationHistory.push(`You: ${newPrompt}`);
   const result = await model.generateContent([conversationHistory.join("\n")]);

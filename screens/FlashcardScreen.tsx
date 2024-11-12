@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import Flashcard from "../components/flashcard/Flashcard";
+import { useAuth } from "../context/AuthContext";
 
 type TableData = {
   word: string;
@@ -15,6 +16,7 @@ type TableData = {
 };
 
 const FlashcardScreen = () => {
+  const { authState } = useAuth();
   const width = Dimensions.get("window").width;
   const [data, setData] = useState<TableData[]>([]); // state to hold the fetched data
   const [loading, setLoading] = useState<boolean>(true); // loading state
@@ -25,7 +27,14 @@ const FlashcardScreen = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `https://eusebiusbackend.onrender.com/words`
+          `https://eusebiusbackend.onrender.com/words`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authState?.token}`,
+            },
+          }
         );
         const result = await response.json();
         const mixedData = result.sort(() => Math.random() - 0.5);

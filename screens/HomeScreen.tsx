@@ -8,8 +8,11 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { showMessage } from "react-native-flash-message";
+import { useAuth } from "../context/AuthContext";
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const { onLogout } = useAuth();
+
   return (
     <View className="flex-1">
       <ImageBackground
@@ -89,6 +92,20 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               <Text className="text-2xl">Knowledge</Text>
             </TouchableOpacity>
           </View>
+          <TouchableOpacity
+            className="w-40 h-10 bg-white flex flex-row justify-center items-center rounded-xl"
+            onPress={onLogout}
+            style={{
+              elevation: 5,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.5,
+            }}
+          >
+            <Icon name={"log-out"} size={25} color={"black"} />
+            <Text className="ml-5 text-2xl">Logout</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>

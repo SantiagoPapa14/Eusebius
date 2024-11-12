@@ -9,6 +9,7 @@ import {
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/Feather";
 import { showMessage } from "react-native-flash-message";
+import { useAuth } from "../../context/AuthContext";
 
 interface Props {
   definitionData: any;
@@ -24,7 +25,7 @@ const Definition: React.FC<Props> = ({
   selfRef,
 }) => {
   if (!definitionIsOpen) return null;
-
+  const { authState } = useAuth();
   return (
     <GestureHandlerRootView style={styles.container}>
       <BottomSheet
@@ -57,6 +58,7 @@ const Definition: React.FC<Props> = ({
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",
+                      Authorization: `Bearer ${authState?.token}`,
                     },
                     body: JSON.stringify({
                       word: definitionData.short_name,

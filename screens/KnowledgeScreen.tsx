@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
+import { useAuth } from "../context/AuthContext";
 
 type TableData = {
   word: string;
@@ -15,6 +16,7 @@ type TableData = {
 };
 
 const KnowledgeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const { authState } = useAuth();
   const [data, setData] = useState<TableData[]>([]); // state to hold the fetched data
   const [loading, setLoading] = useState<boolean>(true); // loading state
   const [error, setError] = useState<string | null>(null); // error state
@@ -25,7 +27,14 @@ const KnowledgeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       try {
         // Example API call
         const response = await fetch(
-          `https://eusebiusbackend.onrender.com/words`
+          `https://eusebiusbackend.onrender.com/words`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authState?.token}`,
+            },
+          }
         );
         const result = await response.json();
         setData(result as TableData[]); // Set the data into the state
@@ -58,6 +67,7 @@ const KnowledgeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               method: "DELETE",
               headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer ${authState?.token}`,
               },
             }
           );

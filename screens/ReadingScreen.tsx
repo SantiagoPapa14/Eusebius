@@ -18,8 +18,10 @@ import EnglishText from "../components/reading/EnglishText";
 import SkeletonReader from "../components/reading/SkeletonReader";
 import Definition from "../components/reading/Definition";
 import { showMessage } from "react-native-flash-message";
+import { useAuth } from "../context/AuthContext";
 
 const ReadingScreen = () => {
+  const { authState } = useAuth();
   const [readings, setReadings] = useState<massReadingsType>();
   const [selectedReading, setSelectedReading] =
     useState<keyof massReadingsType>("gospel");
@@ -38,7 +40,14 @@ const ReadingScreen = () => {
     const fetchData = async () => {
       try {
         const readingsData = await fetch(
-          "https://eusebiusbackend.onrender.com/readings/populated"
+          "https://eusebiusbackend.onrender.com/readings/populated",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authState?.token}`,
+            },
+          }
         );
         const readingsJson = await readingsData.json();
         setReadings(readingsJson);
