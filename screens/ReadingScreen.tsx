@@ -39,7 +39,7 @@ const ReadingScreen = () => {
     const fetchData = async () => {
       try {
         const readingsData = await fetch(
-          "https://eusebiusbackend.onrender.com/readings/populated",
+          "http://10.0.2.2:4000/readings/populated",
           {
             method: "GET",
             headers: {

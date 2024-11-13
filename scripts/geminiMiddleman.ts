@@ -17,7 +17,7 @@ export function resetConversation() {
 }
 
 async function primeConversation(token: string) {
-  const response = await fetch(`https://eusebiusbackend.onrender.com/words`, {
+  const response = await fetch(`http://10.0.2.2:4000/words`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

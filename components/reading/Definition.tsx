@@ -53,7 +53,7 @@ const Definition: React.FC<Props> = ({
             <TouchableOpacity
               onPress={async () => {
                 const response = await fetch(
-                  `https://eusebiusbackend.onrender.com/words/${definitionData.short_name}`,
+                  `http://10.0.2.2:4000/words/${definitionData.short_name}`,
                   {
                     method: "POST",
                     headers: {
