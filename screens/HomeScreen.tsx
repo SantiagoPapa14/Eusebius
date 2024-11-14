@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  // ScrollView, Para cuando haya mas cosas
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { useAuth } from "../context/AuthContext";
@@ -25,13 +26,14 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         className="w-screen h-screen"
         style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
       >
-        <View className="h-1/5 mt-28">
+        {/* <ScrollView> Para cuando haya mas cosas */}
+        <View className="h-1/5 mt-16">
           <Image
             source={require("../assets/LogoHQ.png")}
-            className="w-full h-full object-cover rounded-full"
+            className="w-full h-full object-cover"
           />
         </View>
-        <View className="flex-1 flex items-center mt-8 mb-32 space-y-10">
+        <View className="flex-1 flex items-center mt-5 mb-32 space-y-8">
           <View className="w-full flex flex-row justify-center items-center space-x-10">
             <TouchableOpacity
               className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
@@ -92,21 +94,43 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               <Text className="text-2xl">Vocabulary</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            className="w-40 h-10 bg-white flex flex-row justify-center items-center rounded-xl"
-            onPress={onLogout}
-            style={{
-              elevation: 5,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.25,
-              shadowRadius: 3.5,
-            }}
-          >
-            <Icon name={"log-out"} size={25} color={"black"} />
-            <Text className="ml-5 text-2xl">Logout</Text>
-          </TouchableOpacity>
+          <View className="w-full flex flex-row justify-center items-center space-x-10">
+            <TouchableOpacity
+              className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
+              onPress={() =>
+                showMessage({
+                  message: "Not implemented yet",
+                  type: "warning",
+                })
+              }
+              style={{
+                elevation: 5,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.5,
+              }}
+            >
+              <Icon name={"book"} size={80} color={"black"} />
+              <Text className="text-2xl">Bible</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
+              onPress={() => onLogout()}
+              style={{
+                elevation: 5,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.5,
+              }}
+            >
+              <Icon name={"log-out"} size={80} color={"black"} />
+              <Text className="text-2xl">Logout</Text>
+            </TouchableOpacity>
+          </View>
         </View>
+        {/* </ScrollView> Para cuando haya mas cosas*/}
       </View>
     </View>
   );
