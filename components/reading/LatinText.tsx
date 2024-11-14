@@ -1,5 +1,6 @@
 import { Text, Animated, TouchableOpacity } from "react-native";
 import { hideMessage, showMessage } from "react-native-flash-message";
+import React, { FC } from "react";
 interface LatinTextProps {
   content: string;
   fadeAnim: Animated.Value;

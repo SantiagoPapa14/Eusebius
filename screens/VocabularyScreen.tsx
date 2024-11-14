@@ -16,7 +16,8 @@ type TableData = {
 };
 
 const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const { authState } = useAuth();
+  const { secureFetch } = useAuth();
+  if (!secureFetch) return null;
   const [data, setData] = useState<TableData[]>([]); // state to hold the fetched data
   const [loading, setLoading] = useState<boolean>(true); // loading state
   const [error, setError] = useState<string | null>(null); // error state
@@ -26,16 +27,9 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const fetchData = async () => {
       try {
         // Example API call
-        const response = await fetch(`http://10.0.2.2:4000/words`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authState?.token}`,
-          },
-        });
-        const result = await response.json();
+        const result = await secureFetch(`/words`);
         setData(result as TableData[]); // Set the data into the state
-      } catch (error) {
+      } catch (error: any) {
         setError(error.message); // Set error if the fetch fails
       } finally {
         setLoading(false); // Set loading to false when the request is complete
@@ -58,12 +52,8 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <TouchableOpacity
         className="w-10 h-10 m-1 bg-white rounded-full border shadow border-gray-200 flex justify-center items-center"
         onPress={async () => {
-          await fetch(`http://10.0.2.2:4000/words/${item.word}`, {
+          await secureFetch(`/words/${item.word}`, {
             method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${authState?.token}`,
-            },
           });
           setData(data.filter((word) => word.word !== item.word));
         }}

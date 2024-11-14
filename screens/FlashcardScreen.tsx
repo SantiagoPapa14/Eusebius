@@ -16,7 +16,8 @@ type TableData = {
 };
 
 const FlashcardScreen = () => {
-  const { authState } = useAuth();
+  const { secureFetch } = useAuth();
+  if (!secureFetch) return null;
   const width = Dimensions.get("window").width;
   const [data, setData] = useState<TableData[]>([]); // state to hold the fetched data
   const [loading, setLoading] = useState<boolean>(true); // loading state
@@ -26,14 +27,7 @@ const FlashcardScreen = () => {
     // Create an async function to fetch the data
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://10.0.2.2:4000/words`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authState?.token}`,
-          },
-        });
-        const result = await response.json();
+        const result = (await secureFetch(`/words`)) as TableData[];
         const mixedData = result.sort(() => Math.random() - 0.5);
         setData(mixedData as TableData[]);
       } catch (error: any) {

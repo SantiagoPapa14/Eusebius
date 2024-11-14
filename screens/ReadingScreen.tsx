@@ -20,7 +20,8 @@ import Definition from "../components/reading/Definition";
 import { useAuth } from "../context/AuthContext";
 
 const ReadingScreen = () => {
-  const { authState } = useAuth();
+  const { secureFetch } = useAuth();
+  if (!secureFetch) return null;
   const [readings, setReadings] = useState<massReadingsType>();
   const [selectedReading, setSelectedReading] =
     useState<keyof massReadingsType>("gospel");
@@ -38,18 +39,8 @@ const ReadingScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const readingsData = await fetch(
-          "http://10.0.2.2:4000/readings/populated",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${authState?.token}`,
-            },
-          }
-        );
-        const readingsJson = await readingsData.json();
-        setReadings(readingsJson);
+        const readingsJson = await secureFetch("/readings/populated");
+        setReadings(readingsJson as massReadingsType);
       } catch (error: any) {
         setError(error.message);
       } finally {
