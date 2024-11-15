@@ -5,7 +5,7 @@ import { readingType } from "../../constants/EusebiusTypes";
 interface CurrentVerseProps {
   reading: readingType;
   selectedVerse: number;
-  fadeAnim: Animated.Value;
+  fadeAnim?: Animated.Value;
 }
 
 const CurrentVerse: React.FC<CurrentVerseProps> = ({

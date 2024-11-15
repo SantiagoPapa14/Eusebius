@@ -24,3 +24,8 @@ export type massReadingsType = {
   firstReading: readingType;
   secondReading?: readingType;
 };
+
+export type localBookData = {
+  Book: string;
+  Chapters: number;
+};
