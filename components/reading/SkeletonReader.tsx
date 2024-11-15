@@ -1,8 +1,13 @@
 import { View, Text, TouchableOpacity, ImageBackground } from "react-native";
+import React from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import SkeletonLoader from "../SkeletonLoader";
 
-const SkeletonReader = () => {
+const SkeletonReader = ({
+  hideReadingSelector,
+}: {
+  hideReadingSelector?: any;
+}) => {
   return (
     <View className="flex-1">
       <ImageBackground
@@ -16,7 +21,7 @@ const SkeletonReader = () => {
         style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
       >
         <View className="flex-1 h-screen items-center justify-center bg-gbGray">
-          <View className="flex-1 items-center justify-center w-screen mt-10 pr-5 pl-5">
+          <View className="flex-1 items-center justify-center w-screen pr-5 pl-5">
             <Text className="text-lg text-center">
               <SkeletonLoader />
             </Text>
@@ -44,27 +49,28 @@ const SkeletonReader = () => {
             </Text>
           </View>
 
-          {/* Reading Selector */}
-          <View className="flex-row justify-center items-center bg-white h-20 w-screen">
-            <TouchableOpacity
-              className="flex-1 items-center justify-center h-20"
-              disabled
-            >
-              <Text>Psalm</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="flex-1 items-center justify-center h-20"
-              disabled
-            >
-              <Text className="font-bold text-base">Gospel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="flex-1 items-center justify-center h-20"
-              disabled
-            >
-              <Text>Reading</Text>
-            </TouchableOpacity>
-          </View>
+          {hideReadingSelector ? null : (
+            <View className="flex-row justify-center items-center bg-white h-20 w-screen">
+              <TouchableOpacity
+                className="flex-1 items-center justify-center h-20"
+                disabled
+              >
+                <Text>Psalm</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="flex-1 items-center justify-center h-20"
+                disabled
+              >
+                <Text className="font-bold text-base">Gospel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="flex-1 items-center justify-center h-20"
+                disabled
+              >
+                <Text>Reading</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
     </View>

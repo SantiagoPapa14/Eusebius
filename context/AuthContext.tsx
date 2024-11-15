@@ -6,6 +6,7 @@ interface AuthProps {
   onRegister?: (email: string, password: string) => Promise<void>;
   onLogin?: (email: string, password: string) => Promise<void>;
   onLogout?: () => Promise<void>;
+  secureFetch?: (route: string, params?: any) => Promise<any | Array<any>>;
 }
 
 const TOKEN_KEY = "api_token";
@@ -96,11 +97,25 @@ export const AuthProvider = ({ children }: any) => {
     });
   };
 
+  const secureFetch = async (route: string, params?: any) => {
+    if (!params) params = {};
+    params.headers = {
+      ...params.headers,
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authState?.token}`, // Use token from authState
+    };
+    const res = await fetch(API_URL + route, params);
+    if (res.status === 401) await logout();
+    const data = await res.json();
+    return data;
+  };
+
   const value = {
     onRegister: register,
     onLogin: login,
     onLogout: logout,
     authState,
+    secureFetch: secureFetch,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

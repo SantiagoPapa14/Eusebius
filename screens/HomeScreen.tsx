@@ -1,18 +1,11 @@
 import React from "react";
-import {
-  View,
-  ImageBackground,
-  Text,
-  TouchableOpacity,
-  Image,
-} from "react-native";
-import Icon from "react-native-vector-icons/Feather";
-import { showMessage } from "react-native-flash-message";
+import { View, ImageBackground, Image } from "react-native";
 import { useAuth } from "../context/AuthContext";
+import { showMessage } from "react-native-flash-message";
+import NavButton from "../components/home/NavButton";
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { onLogout } = useAuth();
-
   return (
     <View className="flex-1">
       <ImageBackground
@@ -25,87 +18,39 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         className="w-screen h-screen"
         style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
       >
-        <View className="h-1/5 mt-28">
+        <View className="h-1/5 mt-16">
           <Image
             source={require("../assets/LogoHQ.png")}
-            className="w-full h-full object-cover rounded-full"
+            className="w-full h-full object-cover"
           />
         </View>
-        <View className="flex-1 flex items-center mt-8 mb-32 space-y-10">
-          <View className="w-full flex flex-row justify-center items-center space-x-10">
-            <TouchableOpacity
-              className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
-              onPress={() => navigation.navigate("Readings")}
-              style={{
-                elevation: 5,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.5,
-              }}
-            >
-              <Icon name={"book-open"} size={80} color={"black"} />
-              <Text className="text-2xl">Readings</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
-              onPress={() => navigation.navigate("Professor")}
-              style={{
-                elevation: 5,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.5,
-              }}
-            >
-              <Icon name={"user"} size={80} color={"black"} />
-              <Text className="text-2xl">Professor</Text>
-            </TouchableOpacity>
-          </View>
-          <View className="w-full flex flex-row justify-center items-center space-x-10">
-            <TouchableOpacity
-              className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
-              onPress={() => navigation.navigate("Flashcards")}
-              style={{
-                elevation: 5,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.5,
-              }}
-            >
-              <Icon name={"layers"} size={80} color={"black"} />
-              <Text className="text-2xl">Flashcards</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="w-40 h-40 bg-white flex justify-center items-center rounded-xl"
-              onPress={() => navigation.navigate("Vocabulary")}
-              style={{
-                elevation: 5,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.5,
-              }}
-            >
-              <Icon name={"archive"} size={80} color={"black"} />
-              <Text className="text-2xl">Vocabulary</Text>
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity
-            className="w-40 h-10 bg-white flex flex-row justify-center items-center rounded-xl"
-            onPress={onLogout}
-            style={{
-              elevation: 5,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.25,
-              shadowRadius: 3.5,
-            }}
-          >
-            <Icon name={"log-out"} size={25} color={"black"} />
-            <Text className="ml-5 text-2xl">Logout</Text>
-          </TouchableOpacity>
+        <View className="flex-1 flex-wrap flex-row justify-center items-center">
+          <NavButton
+            text="Readings"
+            onPress={() => navigation.navigate("Readings")}
+            icon="book-open"
+          />
+          <NavButton
+            text="Professor"
+            onPress={() => navigation.navigate("Professor")}
+            icon="user"
+          />
+          <NavButton
+            text="Flashcards"
+            onPress={() => navigation.navigate("Flashcards")}
+            icon="layers"
+          />
+          <NavButton
+            text="Vocabulary"
+            onPress={() => navigation.navigate("Vocabulary")}
+            icon="archive"
+          />
+          <NavButton
+            text="Bible"
+            onPress={() => navigation.navigate("Bible")}
+            icon="book"
+          />
+          <NavButton text="Logout" onPress={() => onLogout} icon="log-out" />
         </View>
       </View>
     </View>

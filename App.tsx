@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import FlashMessage from "react-native-flash-message";
 import { enableScreens } from "react-native-screens";
-import { Text, TouchableOpacity } from "react-native";
+import { useFonts } from "expo-font";
 enableScreens();
 
 import LoginScreen from "./screens/LoginScreen";
@@ -13,6 +13,7 @@ import ReadingScreen from "./screens/ReadingScreen";
 import KnowledgeScreen from "./screens/VocabularyScreen";
 import FlashcardScreen from "./screens/FlashcardScreen";
 import ProfessorScreen from "./screens/ProfessorScreen";
+import BibleScreen from "./screens/BibleScreen";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import VocabularyScreen from "./screens/VocabularyScreen";
 
@@ -28,6 +29,9 @@ export default function App() {
 }
 
 export const Layout = () => {
+  const [fontsLoaded] = useFonts({
+    Coursive: require("./assets/fonts/Birds.ttf"),
+  });
   const { authState, onLogout } = useAuth();
   return (
     <NavigationContainer>
@@ -43,6 +47,7 @@ export const Layout = () => {
             <Stack.Screen name="Vocabulary" component={VocabularyScreen} />
             <Stack.Screen name="Flashcards" component={FlashcardScreen} />
             <Stack.Screen name="Professor" component={ProfessorScreen} />
+            <Stack.Screen name="Bible" component={BibleScreen} />
           </>
         ) : (
           <Stack.Screen

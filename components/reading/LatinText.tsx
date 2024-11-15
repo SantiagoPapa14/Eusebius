@@ -1,8 +1,9 @@
 import { Text, Animated, TouchableOpacity } from "react-native";
 import { hideMessage, showMessage } from "react-native-flash-message";
+import React, { FC } from "react";
 interface LatinTextProps {
   content: string;
-  fadeAnim: Animated.Value;
+  fadeAnim?: Animated.Value;
   slideAnim: Animated.Value;
   setDefinitionData: any;
   setDefinitionIsOpen: any;
@@ -106,10 +107,10 @@ const LatinText: React.FC<LatinTextProps> = ({
   return (
     <Animated.View
       style={{
-        opacity: fadeAnim,
+        opacity: fadeAnim ?? 1,
         transform: [{ translateX: slideAnim }],
       }}
-      className="flex-1 items-center justify-center w-screen mt-10 pr-5 pl-5"
+      className="flex-1 items-center justify-center w-screen pr-5 pl-5"
     >
       <Text className="text-lg text-center">
         {renderText(content, setDefinitionData, setDefinitionIsOpen)}

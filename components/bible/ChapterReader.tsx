@@ -9,22 +9,26 @@ import {
 } from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 
-import { massReadingsType, readingType } from "../constants/EusebiusTypes";
-import ReadingSelector from "../components/reading/ReadingSelector";
-import VerseNavigation from "../components/reading/VerseSelector";
-import CurrentVerse from "../components/reading/CurrentVerse";
-import LatinText from "../components/reading/LatinText";
-import EnglishText from "../components/reading/EnglishText";
-import SkeletonReader from "../components/reading/SkeletonReader";
-import Definition from "../components/reading/Definition";
-import { useAuth } from "../context/AuthContext";
+import { readingType } from "../../constants/EusebiusTypes";
+import VerseNavigation from "../reading/VerseSelector";
+import CurrentVerse from "../reading/CurrentVerse";
+import LatinText from "../reading/LatinText";
+import EnglishText from "../reading/EnglishText";
+import SkeletonReader from "../reading/SkeletonReader";
+import Definition from "../reading/Definition";
+import { useAuth } from "../../context/AuthContext";
 
-const ReadingScreen = () => {
+const ChapterReader = ({
+  book,
+  chapter,
+}: {
+  book: string;
+  chapter: number;
+}) => {
   const { secureFetch } = useAuth();
   if (!secureFetch) return null;
-  const [readings, setReadings] = useState<massReadingsType>();
-  const [selectedReading, setSelectedReading] =
-    useState<keyof massReadingsType>("gospel");
+
+  const [chapterData, setChapterData] = useState<readingType>();
   const [selectedVerse, setSelectedVerse] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,14 +37,15 @@ const ReadingScreen = () => {
   const [definitionData, setDefinitionData] = useState(null);
 
   const slideAnim = useRef(new Animated.Value(0)).current;
-  const fadeAnim = useRef(new Animated.Value(1)).current;
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const readingsJson = await secureFetch("/readings/populated");
-        setReadings(readingsJson as massReadingsType);
+        const chapterJson: readingType = await secureFetch(
+          `/bible/${book}/${chapter}`
+        );
+        setChapterData(chapterJson);
       } catch (error: any) {
         setError(error.message);
       } finally {
@@ -51,7 +56,7 @@ const ReadingScreen = () => {
     fetchData();
   }, []);
 
-  if (loading) return <SkeletonReader />;
+  if (loading) return <SkeletonReader hideReadingSelector={true} />;
 
   if (error)
     return (
@@ -61,11 +66,10 @@ const ReadingScreen = () => {
     );
 
   if (
-    !readings ||
-    !readings[selectedReading] ||
-    !readings[selectedReading].verses ||
-    !readings[selectedReading].latinContent ||
-    !readings[selectedReading].englishContent
+    !chapterData ||
+    !chapterData.verses ||
+    !chapterData.latinContent ||
+    !chapterData.englishContent
   )
     return null;
 
@@ -106,44 +110,16 @@ const ReadingScreen = () => {
     },
   });
 
-  const handleChangeReading = (readingType: keyof massReadingsType) => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => {
-      setSelectedVerse(0);
-      setSelectedReading(readingType);
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => setIsAnimating(false));
-    });
+  const isFirstVerse = () => selectedVerse === 0;
+  const isLastVerse = () => {
+    if (!chapterData || !chapterData.latinContent) return false;
+    return selectedVerse === chapterData?.latinContent.length - 1;
   };
-
-  function isFirstVerse() {
-    return selectedVerse === 0;
-  }
-
-  function isLastVerse() {
-    if (
-      !readings ||
-      !readings[selectedReading] ||
-      !readings[selectedReading].latinContent
-    )
-      return false;
-    return (
-      selectedVerse === readings?.[selectedReading].latinContent.length - 1 ?? 0
-    );
-  }
 
   return (
     <View className="flex-1" {...panResponder.panHandlers}>
       <ImageBackground
-        source={require("../assets/MichaelWpp.jpg")}
+        source={require("../../assets/MichaelWpp.jpg")}
         className="flex-1"
         resizeMode="cover"
         style={{ opacity: 0.1 }}
@@ -152,14 +128,9 @@ const ReadingScreen = () => {
         className="flex-1 flex justify-center"
         style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
       >
-        <View className="flex-1 h-screen items-center justify-center bg-gbGray">
+        <View className="flex-1 h-screen items-center justify-center">
           <LatinText
-            content={
-              readings[selectedReading].latinContent[selectedVerse]
-                ? readings[selectedReading].latinContent[selectedVerse].Content
-                : ""
-            }
-            fadeAnim={fadeAnim}
+            content={chapterData?.latinContent[selectedVerse].Content}
             slideAnim={slideAnim}
             setDefinitionData={setDefinitionData}
             setDefinitionIsOpen={setDefinitionIsOpen}
@@ -171,27 +142,15 @@ const ReadingScreen = () => {
             onNext={() => slideToNextVerse("next")}
           >
             <CurrentVerse
-              reading={readings[selectedReading] as readingType}
+              reading={chapterData as readingType}
               selectedVerse={selectedVerse}
-              fadeAnim={fadeAnim}
             />
           </VerseNavigation>
           <EnglishText
-            content={
-              readings[selectedReading].englishContent[selectedVerse]
-                ? readings[selectedReading].englishContent[selectedVerse]
-                    .Content
-                : ""
-            }
-            fadeAnim={fadeAnim}
+            content={chapterData?.englishContent[selectedVerse].Content}
             slideAnim={slideAnim}
           />
         </View>
-        <ReadingSelector
-          readings={readings}
-          selectedReading={selectedReading}
-          handleChangeReading={handleChangeReading}
-        />
       </View>
       <Definition
         definitionData={definitionData}
@@ -203,4 +162,4 @@ const ReadingScreen = () => {
   );
 };
 
-export default ReadingScreen;
+export default ChapterReader;

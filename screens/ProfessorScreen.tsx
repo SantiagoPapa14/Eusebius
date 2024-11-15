@@ -20,7 +20,8 @@ type message = {
 };
 
 const ProfessorScreen = () => {
-  const { authState } = useAuth();
+  const { secureFetch } = useAuth();
+  if (!secureFetch) return null;
   const [message, setMessage] = useState<string>("");
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [messages, setMessages] = useState<message[]>([
@@ -67,7 +68,7 @@ const ProfessorScreen = () => {
       ).start();
 
       // Simulate the bot response (you can remove this in production)
-      const response = await sendMessage(message, authState?.token ?? "");
+      const response = await sendMessage(message, secureFetch);
 
       // Then, update the messages with the bot's response
       setMessages((prevMessages) => [

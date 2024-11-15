@@ -6,6 +6,7 @@ import {
   Linking,
   StyleSheet,
 } from "react-native";
+import React, { FC } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/Feather";
 import { showMessage } from "react-native-flash-message";
@@ -25,7 +26,8 @@ const Definition: React.FC<Props> = ({
   selfRef,
 }) => {
   if (!definitionIsOpen) return null;
-  const { authState } = useAuth();
+  const { secureFetch } = useAuth();
+  if (!secureFetch) return null;
   return (
     <GestureHandlerRootView style={styles.container}>
       <BottomSheet
@@ -52,21 +54,16 @@ const Definition: React.FC<Props> = ({
             </Text>
             <TouchableOpacity
               onPress={async () => {
-                const response = await fetch(
-                  `https://eusebiusbackend.onrender.com/words/${definitionData.short_name}`,
+                const response = await secureFetch(
+                  "/words/" + definitionData.short_name,
                   {
                     method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${authState?.token}`,
-                    },
                     body: JSON.stringify({
-                      word: definitionData.short_name,
                       definition: definitionData.translation,
                     }),
                   }
                 );
-                if (response.ok)
+                if (!response.message)
                   showMessage({ message: "Word saved", type: "info" });
                 else
                   showMessage({ message: "Already known!", type: "warning" });
