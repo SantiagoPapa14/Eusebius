@@ -70,11 +70,9 @@ const ReadingScreen = () => {
     return null;
 
   const slideToNextVerse = (direction: "prev" | "next") => {
-    if (isAnimating) return;
     if (direction === "prev" && isFirstVerse()) return;
     if (direction === "next" && isLastVerse()) return;
-
-    setIsAnimating(true);
+    setSelectedVerse((prev) => (direction === "next" ? prev + 1 : prev - 1));
 
     const toValue = direction === "prev" ? 400 : -400;
     Animated.timing(slideAnim, {
@@ -83,14 +81,13 @@ const ReadingScreen = () => {
       easing: Easing.out(Easing.ease),
       useNativeDriver: true,
     }).start(() => {
-      setSelectedVerse((prev) => (direction === "next" ? prev + 1 : prev - 1));
       slideAnim.setValue(-toValue);
       Animated.timing(slideAnim, {
         toValue: 0,
         duration: 300,
         easing: Easing.out(Easing.ease),
         useNativeDriver: true,
-      }).start(() => setIsAnimating(false));
+      }).start();
     });
   };
 
