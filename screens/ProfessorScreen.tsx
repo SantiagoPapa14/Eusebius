@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import Markdown from "react-native-markdown-display";
-import { sendMessage, resetConversation } from "../scripts/geminiMiddleman";
 import { useAuth } from "../context/AuthContext";
 
 type message = {
@@ -26,7 +25,7 @@ const ProfessorScreen = () => {
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [messages, setMessages] = useState<message[]>([
     {
-      id: 1,
+      id: -1,
       text: "Hi there! I'm your Latin professor, what do you need help with today? 😇",
       sender: "bot",
     },
@@ -37,21 +36,18 @@ const ProfessorScreen = () => {
 
   const handleSend = async () => {
     if (message.trim()) {
-      // First, update the messages with the user's message
       setMessages((prevMessages) => {
         const newMessages = [
           ...prevMessages,
-          { id: prevMessages.length + 1, text: message, sender: "user" },
+          { id: prevMessages.length + 1, text: message, sender: "You" },
         ];
         return newMessages;
       });
 
       setMessage("");
       flatListRef.current?.scrollToEnd({ animated: true });
-      // Show the typing indicator
-      setIsTyping(true);
 
-      // Start the pulsing animation
+      setIsTyping(true);
       Animated.loop(
         Animated.sequence([
           Animated.timing(typingAnimation, {
@@ -67,22 +63,29 @@ const ProfessorScreen = () => {
         ])
       ).start();
 
-      // Simulate the bot response (you can remove this in production)
-      const response = await sendMessage(message, secureFetch);
+      //Here is where the data transfer happens
 
-      // Then, update the messages with the bot's response
+      const history: string[] = [];
+      messages.forEach((message) => {
+        if (message.id !== -1)
+          history.push(`${message.sender}: ${message.text}`);
+      });
+
+      const newResponse = await secureFetch(`/professor/sendMessage`, {
+        method: "POST",
+        body: JSON.stringify({ message: message, history: history }),
+      });
+
+      const response = newResponse.response;
+
+      //Now cleanup
+
       setMessages((prevMessages) => [
         ...prevMessages,
-        { id: prevMessages.length + 1, text: response, sender: "bot" },
+        { id: prevMessages.length + 1, text: response, sender: "Model" },
       ]);
-
-      // Hide the typing indicator
       setIsTyping(false);
-
-      // Stop the pulsing animation
       typingAnimation.stopAnimation();
-
-      // Scroll to the bottom
       flatListRef.current?.scrollToEnd({ animated: true });
     }
   };
@@ -91,8 +94,6 @@ const ProfessorScreen = () => {
     // Scroll to the bottom when a new message is added
     flatListRef.current?.scrollToEnd({ animated: true });
   }, [messages]);
-
-  resetConversation();
 
   return (
     <View className="flex-1">
@@ -114,12 +115,12 @@ const ProfessorScreen = () => {
             renderItem={({ item }) => (
               <View
                 className={`flex-row ${
-                  item.sender === "user" ? "justify-end" : "justify-start"
+                  item.sender === "You" ? "justify-end" : "justify-start"
                 } mb-4`}
               >
                 <View
                   className={`rounded-lg border border-gray-300 mx-4 ${
-                    item.sender === "user" ? "bg-white" : "bg-gray-200"
+                    item.sender === "You" ? "bg-white" : "bg-gray-200"
                   } p-4 max-w-[75%]`}
                 >
                   <Markdown style={{ text: { fontSize: 16 } }}>
