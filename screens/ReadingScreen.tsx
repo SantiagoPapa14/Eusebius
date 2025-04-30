@@ -13,7 +13,7 @@ import { massReadingsType, readingType } from "../constants/EusebiusTypes";
 import ReadingSelector from "../components/reading/ReadingSelector";
 import VerseNavigation from "../components/reading/VerseSelector";
 import CurrentVerse from "../components/reading/CurrentVerse";
-import LatinText from "../components/reading/LatinText";
+import TargetText from "../components/reading/TargetText";
 import EnglishText from "../components/reading/EnglishText";
 import SkeletonReader from "../components/reading/SkeletonReader";
 import Definition from "../components/reading/Definition";
@@ -150,7 +150,7 @@ const ReadingScreen = () => {
         style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
       >
         <View className="flex-1 h-screen items-center justify-center bg-gbGray">
-          <LatinText
+          <TargetText
             content={
               readings[selectedReading].latinContent[selectedVerse]
                 ? readings[selectedReading].latinContent[selectedVerse].Content

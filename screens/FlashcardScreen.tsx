@@ -89,23 +89,23 @@ const FlashcardScreen = () => {
         style={{ opacity: 0.15 }}
       />
       <View
-        className="w-screen h-screen"
+        className="w-full h-full"
         style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
       >
-        <View className="flex-1 justify-center items-center">
+        <View className="flex-1 flex bg-blue-400 justify-center items-center">
           <Carousel
             loop
             width={width}
             autoPlay={false}
             data={data}
-            // scrollAnimationDuration={500}
             renderItem={({ item }) => (
-              <View className="p-6 mb-20 flex-1 flex justify-center items-center">
+              <View className="bg-green-100 flex justify-center items-center">
                 <Flashcard front={item.word} back={item.definition} />
               </View>
             )}
           />
-        </View>
+	 <View className="w-40 h-20 mb-10 position-absolute bg-red-200"><Text>Hello</Text></View>  
+	  </View>
       </View>
     </View>
   );

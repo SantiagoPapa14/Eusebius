@@ -10,7 +10,6 @@ import LoginScreen from "./screens/LoginScreen";
 
 import HomeScreen from "./screens/HomeScreen";
 import ReadingScreen from "./screens/ReadingScreen";
-import KnowledgeScreen from "./screens/VocabularyScreen";
 import FlashcardScreen from "./screens/FlashcardScreen";
 import ProfessorScreen from "./screens/ProfessorScreen";
 import BibleScreen from "./screens/BibleScreen";
@@ -29,10 +28,10 @@ export default function App() {
 }
 
 export const Layout = () => {
-  const [fontsLoaded] = useFonts({
+  useFonts({
     Coursive: require("./assets/fonts/Birds.ttf"),
   });
-  const { authState, onLogout } = useAuth();
+  const { authState } = useAuth();
   return (
     <NavigationContainer>
       <Stack.Navigator>

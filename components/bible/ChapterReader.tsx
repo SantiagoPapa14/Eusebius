@@ -12,7 +12,7 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import { readingType } from "../../constants/EusebiusTypes";
 import VerseNavigation from "../reading/VerseSelector";
 import CurrentVerse from "../reading/CurrentVerse";
-import LatinText from "../reading/LatinText";
+import TargetText from "../reading/TargetText";
 import EnglishText from "../reading/EnglishText";
 import SkeletonReader from "../reading/SkeletonReader";
 import Definition from "../reading/Definition";
@@ -42,7 +42,7 @@ const ChapterReader = ({
     const fetchData = async () => {
       try {
         const chapterJson: readingType = await secureFetch(
-          `/bible/${book}/${chapter}`
+          `/bible/${book}/${chapter}`,
         );
         setChapterData(chapterJson);
       } catch (error: any) {
@@ -125,7 +125,7 @@ const ChapterReader = ({
         style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
       >
         <View className="flex-1 h-screen items-center justify-center">
-          <LatinText
+          <TargetText
             content={chapterData?.latinContent[selectedVerse].Content}
             slideAnim={slideAnim}
             setDefinitionData={setDefinitionData}

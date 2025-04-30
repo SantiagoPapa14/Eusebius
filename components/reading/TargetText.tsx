@@ -1,7 +1,7 @@
 import { Text, Animated, TouchableOpacity } from "react-native";
 import { hideMessage, showMessage } from "react-native-flash-message";
 import React, { FC } from "react";
-interface LatinTextProps {
+interface TargetTextProps {
   content: string;
   fadeAnim?: Animated.Value;
   slideAnim: Animated.Value;
@@ -12,7 +12,7 @@ interface LatinTextProps {
 const renderText = (
   content: string,
   setDefinitionData: any,
-  setDefinitionIsOpen: any
+  setDefinitionIsOpen: any,
 ) => {
   return content.split(" ").map((word, index) => (
     <TouchableOpacity
@@ -29,7 +29,7 @@ const renderText = (
 const handleWordPress = async (
   word: string,
   setDefinitionData: any,
-  setDefinitionIsOpen: any
+  setDefinitionIsOpen: any,
 ) => {
   showMessage({
     message: "Loading definition...",
@@ -41,7 +41,7 @@ const handleWordPress = async (
       .replaceAll(":", "")
       .replaceAll(",", "")
       .replaceAll(".", "")
-      .replaceAll(" ", "")
+      .replaceAll(" ", ""),
   );
 
   const url = `https://anastrophe.uchicago.edu/morpho-api//detail/${cleanWord}?dicos=all`;
@@ -93,11 +93,11 @@ function replaceSpecialChars(str: string) {
 
   return str.replace(
     /æ|Æ|ø|Ø|å|Å|œ|Œ|þ|Þ|ð|Ð|ü|Ü|ö|Ö|ß/g,
-    (match) => specialChars[match as keyof typeof specialChars]
+    (match) => specialChars[match as keyof typeof specialChars],
   );
 }
 
-const LatinText: React.FC<LatinTextProps> = ({
+const TargetText: React.FC<TargetTextProps> = ({
   content,
   fadeAnim,
   slideAnim,
@@ -119,4 +119,4 @@ const LatinText: React.FC<LatinTextProps> = ({
   );
 };
 
-export default LatinText;
+export default TargetText;

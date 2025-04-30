@@ -1,7 +1,6 @@
 import React from "react";
 import { View, ImageBackground, Image } from "react-native";
 import { useAuth } from "../context/AuthContext";
-import { showMessage } from "react-native-flash-message";
 import NavButton from "../components/home/NavButton";
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {

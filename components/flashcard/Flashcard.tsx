@@ -25,7 +25,7 @@ const Flashcard = ({ front, back }: { front: string; back: string }) => {
     <TouchableOpacity
       onPress={() => handleFlipCard()}
       activeOpacity={1}
-      className="w-80 h-3/5 p-5 bg-white rounded-lg border border-gray-400 shadow border-gray-200 flex justify-center items-center"
+      className="w-80 h-3/5 p-5 bg-white rounded-lg border border-gray-300 shadow flex justify-center items-center"
       style={{
         elevation: 5,
         shadowColor: "#000",
