@@ -1,13 +1,13 @@
 import { Text, Animated } from "react-native";
 import React from "react";
 
-interface EnglishTextProps {
+interface SourceTextProps {
   content: string;
   fadeAnim?: Animated.Value;
   slideAnim: Animated.Value;
 }
 
-const EnglishText: React.FC<EnglishTextProps> = ({
+const SourceText: React.FC<SourceTextProps> = ({
   content,
   fadeAnim,
   slideAnim,
@@ -25,4 +25,4 @@ const EnglishText: React.FC<EnglishTextProps> = ({
   );
 };
 
-export default EnglishText;
+export default SourceText;

@@ -14,7 +14,7 @@ import ReadingSelector from "../components/reading/ReadingSelector";
 import VerseNavigation from "../components/reading/VerseSelector";
 import CurrentVerse from "../components/reading/CurrentVerse";
 import TargetText from "../components/reading/TargetText";
-import EnglishText from "../components/reading/EnglishText";
+import SourceText from "../components/reading/SourceText";
 import SkeletonReader from "../components/reading/SkeletonReader";
 import Definition from "../components/reading/Definition";
 import { useAuth } from "../context/AuthContext";
@@ -39,7 +39,10 @@ const ReadingScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const readingsJson = await secureFetch("/readings/populated");
+        const readingsJson = await secureFetch(
+          "/readings/populated?source=English&target=Latin",
+        );
+
         setReadings(readingsJson as massReadingsType);
       } catch (error: any) {
         setError(error.message);
@@ -64,8 +67,8 @@ const ReadingScreen = () => {
     !readings ||
     !readings[selectedReading] ||
     !readings[selectedReading].verses ||
-    !readings[selectedReading].latinContent ||
-    !readings[selectedReading].englishContent
+    !readings[selectedReading].targetContent ||
+    !readings[selectedReading].sourceContent
   )
     return null;
 
@@ -129,11 +132,12 @@ const ReadingScreen = () => {
     if (
       !readings ||
       !readings[selectedReading] ||
-      !readings[selectedReading].latinContent
+      !readings[selectedReading].targetContent
     )
       return false;
     return (
-      selectedVerse === readings?.[selectedReading].latinContent.length - 1 ?? 0
+      selectedVerse === readings?.[selectedReading].targetContent.length - 1 ??
+      0
     );
   }
 
@@ -152,8 +156,8 @@ const ReadingScreen = () => {
         <View className="flex-1 h-screen items-center justify-center bg-gbGray">
           <TargetText
             content={
-              readings[selectedReading].latinContent[selectedVerse]
-                ? readings[selectedReading].latinContent[selectedVerse].Content
+              readings[selectedReading].targetContent[selectedVerse]
+                ? readings[selectedReading].targetContent[selectedVerse].Content
                 : ""
             }
             fadeAnim={fadeAnim}
@@ -173,11 +177,10 @@ const ReadingScreen = () => {
               fadeAnim={fadeAnim}
             />
           </VerseNavigation>
-          <EnglishText
+          <SourceText
             content={
-              readings[selectedReading].englishContent[selectedVerse]
-                ? readings[selectedReading].englishContent[selectedVerse]
-                    .Content
+              readings[selectedReading].sourceContent[selectedVerse]
+                ? readings[selectedReading].sourceContent[selectedVerse].Content
                 : ""
             }
             fadeAnim={fadeAnim}

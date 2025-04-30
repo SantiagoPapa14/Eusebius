@@ -14,8 +14,8 @@ export type verseType = {
 export type readingType = {
   book: string;
   verses: Array<verseType>;
-  latinContent?: Array<dbVerseType>;
-  englishContent?: Array<dbVerseType>;
+  sourceContent?: Array<dbVerseType>;
+  targetContent?: Array<dbVerseType>;
 };
 
 export type massReadingsType = {

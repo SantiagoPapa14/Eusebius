@@ -13,7 +13,7 @@ import { readingType } from "../../constants/EusebiusTypes";
 import VerseNavigation from "../reading/VerseSelector";
 import CurrentVerse from "../reading/CurrentVerse";
 import TargetText from "../reading/TargetText";
-import EnglishText from "../reading/EnglishText";
+import SourceText from "../reading/SourceText";
 import SkeletonReader from "../reading/SkeletonReader";
 import Definition from "../reading/Definition";
 import { useAuth } from "../../context/AuthContext";
@@ -67,8 +67,8 @@ const ChapterReader = ({
   if (
     !chapterData ||
     !chapterData.verses ||
-    !chapterData.latinContent ||
-    !chapterData.englishContent
+    !chapterData.targetContent ||
+    !chapterData.sourceContent
   )
     return null;
 
@@ -108,8 +108,8 @@ const ChapterReader = ({
 
   const isFirstVerse = () => selectedVerse === 0;
   const isLastVerse = () => {
-    if (!chapterData || !chapterData.latinContent) return false;
-    return selectedVerse === chapterData?.latinContent.length - 1;
+    if (!chapterData || !chapterData.targetContent) return false;
+    return selectedVerse === chapterData?.targetContent.length - 1;
   };
 
   return (
@@ -126,7 +126,7 @@ const ChapterReader = ({
       >
         <View className="flex-1 h-screen items-center justify-center">
           <TargetText
-            content={chapterData?.latinContent[selectedVerse].Content}
+            content={chapterData?.targetContent[selectedVerse].Content}
             slideAnim={slideAnim}
             setDefinitionData={setDefinitionData}
             setDefinitionIsOpen={setDefinitionIsOpen}
@@ -142,8 +142,8 @@ const ChapterReader = ({
               selectedVerse={selectedVerse}
             />
           </VerseNavigation>
-          <EnglishText
-            content={chapterData?.englishContent[selectedVerse].Content}
+          <SourceText
+            content={chapterData?.sourceContent[selectedVerse].Content}
             slideAnim={slideAnim}
           />
         </View>
