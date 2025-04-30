@@ -2,8 +2,6 @@ import React from "react";
 import {
   View,
   TouchableOpacity,
-  Button,
-  Pressable,
   Text,
   ImageBackground,
   Image,
@@ -12,22 +10,65 @@ import {
 import { useAuth } from "../context/AuthContext";
 import NavButton from "../components/home/NavButton";
 import Icon from "react-native-vector-icons/Feather";
+import DropdownPicker from "../components/settings/DropdownPicker";
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { onLogout } = useAuth();
   const [showSettings, setShowSettings] = React.useState(false);
+  const [sourceLanguage, setSourceLanguage] = React.useState("English");
+  const [targetLanguage, setTargetLanguage] = React.useState("Latin");
+
   return (
     <View className="flex-1">
       <Modal transparent animationType="fade" visible={showSettings}>
-        <Pressable
-          className="flex-1 bg-black/50 justify-center items-center"
-          onPress={() => setShowSettings(false)}
-        >
+        <View className="flex-1 bg-black/50 justify-center items-center">
           <View className="bg-white p-6 rounded-2xl w-4/5 shadow-lg">
-            <Text className="text-lg font-bold mb-4">Hello from Modal</Text>
-            <Button title="Close" onPress={() => setShowSettings(false)} />
+            <Text className="text-lg font-bold mb-4">Source Language</Text>
+
+            <DropdownPicker
+              options={[
+                { label: "English", value: "English" },
+                { label: "Spanish", value: "Spanish" },
+                { label: "Latin", value: "Latin" },
+                { label: "Italian", value: "Italian" },
+              ]}
+              selectedValue={sourceLanguage}
+              onValueChange={setSourceLanguage}
+            />
+            <Text className="text-lg font-bold mb-4">Target Language</Text>
+
+            <DropdownPicker
+              options={[
+                { label: "English", value: "English" },
+                { label: "Spanish", value: "Spanish" },
+                { label: "Latin", value: "Latin" },
+                { label: "Italian", value: "Italian" },
+              ]}
+              selectedValue={targetLanguage}
+              onValueChange={setTargetLanguage}
+            />
+            <View className="w-full flex flex-row justify-between">
+              <TouchableOpacity
+                onPress={onLogout}
+                className="p-3 w-1/3 flex items-center justify-center mt-6 bg-gray-200 rounded-full"
+              >
+                <View className="flex flex-row gap-2">
+                  <Icon name="log-out" size={16} color="black" />
+                  <Text>Logout</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setShowSettings(false)}
+                className="p-3 w-1/3 flex items-center justify-center mt-6 bg-gray-200 rounded-full"
+              >
+                <View className="flex flex-row gap-2">
+                  <Icon name="save" size={16} color="black" />
+                  <Text>Save</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
-        </Pressable>
+        </View>
       </Modal>
 
       <ImageBackground
@@ -72,14 +113,11 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             onPress={() => navigation.navigate("Bible")}
             icon="book"
           />
-          <NavButton text="Logout" onPress={() => onLogout} icon="log-out" />
-          <TouchableOpacity
-            className="flex-row justify-center items-center gap-2 bg-white rounded-full pb-2 pr-2 shadow"
+          <NavButton
+            text="Settings"
             onPress={() => setShowSettings(true)}
-          >
-            <Icon name="settings" size={40} color={"black"} />
-            <Text>Settings</Text>
-          </TouchableOpacity>
+            icon="settings"
+          />
         </View>
       </View>
     </View>
