@@ -42,7 +42,7 @@ const BibleScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   if (book) {
     if (chapter) {
-      return <ChapterReader book={book.Book} chapter={chapter} />;
+      return <ChapterReader book={book} chapter={chapter} />;
     } else {
       return <ChapterSelector book={book} setChapter={setChapter} />;
     }

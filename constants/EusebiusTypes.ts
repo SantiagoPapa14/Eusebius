@@ -1,21 +1,19 @@
-export type dbVerseType = {
-  Book: string;
-  Chapter: number;
-  Verse: number;
-  Content: string;
-};
-
 export type verseType = {
   chapter: number;
   start: number;
   end: number;
 };
 
+type contentType = {
+  [key: number]: string;
+};
+
 export type readingType = {
   book: string;
   verses: Array<verseType>;
-  latinContent?: Array<dbVerseType>;
-  englishContent?: Array<dbVerseType>;
+  latinContent?: contentType;
+  spanishContent?: contentType;
+  englishContent?: contentType;
 };
 
 export type massReadingsType = {
@@ -27,5 +25,6 @@ export type massReadingsType = {
 
 export type localBookData = {
   Book: string;
-  Chapters: number;
+  Key: string;
+  Chapters: contentType;
 };

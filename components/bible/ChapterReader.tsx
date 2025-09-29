@@ -16,61 +16,28 @@ import LatinText from "../reading/LatinText";
 import EnglishText from "../reading/EnglishText";
 import SkeletonReader from "../reading/SkeletonReader";
 import Definition from "../reading/Definition";
+import { localBookData } from "../../constants/EusebiusTypes";
 import { useAuth } from "../../context/AuthContext";
+
+import latin_bible from "../../constants/latin_bible.json";
+import spanish_bible from "../../constants/spanish_bible.json";
 
 const ChapterReader = ({
   book,
   chapter,
 }: {
-  book: string;
+  book: localBookData;
   chapter: number;
 }) => {
   const { secureFetch } = useAuth();
   if (!secureFetch) return null;
 
-  const [chapterData, setChapterData] = useState<readingType>();
-  const [selectedVerse, setSelectedVerse] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [selectedVerse, setSelectedVerse] = useState(1);
   const [definitionIsOpen, setDefinitionIsOpen] = useState(false);
   const [definitionData, setDefinitionData] = useState(null);
 
   const slideAnim = useRef(new Animated.Value(0)).current;
   const bottomSheetRef = useRef<BottomSheet>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const chapterJson: readingType = await secureFetch(
-          `/bible/${book}/${chapter}`
-        );
-        setChapterData(chapterJson);
-      } catch (error: any) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) return <SkeletonReader hideReadingSelector={true} />;
-
-  if (error)
-    return (
-      <View className="flex-1 items-center justify-center">
-        <Text className="text-lg text-center">{error}</Text>
-      </View>
-    );
-
-  if (
-    !chapterData ||
-    !chapterData.verses ||
-    !chapterData.latinContent ||
-    !chapterData.englishContent
-  )
-    return null;
 
   const slideToNextVerse = (direction: "prev" | "next") => {
     if (direction === "prev" && isFirstVerse()) return;
@@ -106,10 +73,12 @@ const ChapterReader = ({
     },
   });
 
-  const isFirstVerse = () => selectedVerse === 0;
+  const isFirstVerse = () => selectedVerse === 1;
   const isLastVerse = () => {
-    if (!chapterData || !chapterData.latinContent) return false;
-    return selectedVerse === chapterData?.latinContent.length - 1;
+    return (
+      selectedVerse ===
+      Object.keys(latin_bible[book.Key]["chapters"][chapter]).length
+    );
   };
 
   return (
@@ -126,7 +95,7 @@ const ChapterReader = ({
       >
         <View className="flex-1 h-screen items-center justify-center">
           <LatinText
-            content={chapterData?.latinContent[selectedVerse].Content}
+            content={latin_bible[book.Key]["chapters"][chapter][selectedVerse]}
             slideAnim={slideAnim}
             setDefinitionData={setDefinitionData}
             setDefinitionIsOpen={setDefinitionIsOpen}
@@ -138,12 +107,15 @@ const ChapterReader = ({
             onNext={() => slideToNextVerse("next")}
           >
             <CurrentVerse
-              reading={chapterData as readingType}
+              bookName={book.Book}
+              chapter={chapter}
               selectedVerse={selectedVerse}
             />
           </VerseNavigation>
           <EnglishText
-            content={chapterData?.englishContent[selectedVerse].Content}
+            content={
+              spanish_bible[book.Key]["chapters"][chapter][selectedVerse]
+            }
             slideAnim={slideAnim}
           />
         </View>

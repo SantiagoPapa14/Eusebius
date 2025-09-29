@@ -1,7 +1,6 @@
 import React from "react";
 import { View, ImageBackground, Image } from "react-native";
 import { useAuth } from "../context/AuthContext";
-import { showMessage } from "react-native-flash-message";
 import NavButton from "../components/home/NavButton";
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -26,31 +25,35 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         </View>
         <View className="flex-1 flex-wrap flex-row justify-center items-center">
           <NavButton
-            text="Readings"
+            text="Lecturas"
             onPress={() => navigation.navigate("Readings")}
             icon="book-open"
           />
           <NavButton
-            text="Professor"
+            text="Profesor"
             onPress={() => navigation.navigate("Professor")}
             icon="user"
           />
           <NavButton
-            text="Flashcards"
+            text="Cartas"
             onPress={() => navigation.navigate("Flashcards")}
             icon="layers"
           />
           <NavButton
-            text="Vocabulary"
+            text="Vocabulario"
             onPress={() => navigation.navigate("Vocabulary")}
             icon="archive"
           />
           <NavButton
-            text="Bible"
+            text="Bibla"
             onPress={() => navigation.navigate("Bible")}
             icon="book"
           />
-          <NavButton text="Logout" onPress={() => onLogout} icon="log-out" />
+          <NavButton
+            text="Cerrar Sesion"
+            onPress={() => onLogout}
+            icon="log-out"
+          />
         </View>
       </View>
     </View>

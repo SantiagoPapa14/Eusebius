@@ -3,17 +3,18 @@ import React, { FC } from "react";
 import { readingType } from "../../constants/EusebiusTypes";
 
 interface CurrentVerseProps {
-  reading: readingType;
+  bookName: string;
+  chapter: number | string;
   selectedVerse: number;
   fadeAnim?: Animated.Value;
 }
 
 const CurrentVerse: React.FC<CurrentVerseProps> = ({
-  reading,
+  bookName,
+  chapter,
   selectedVerse,
   fadeAnim,
 }) => {
-  if (!reading || !reading.latinContent) return null;
   return (
     <Animated.View
       style={{
@@ -21,7 +22,7 @@ const CurrentVerse: React.FC<CurrentVerseProps> = ({
       }}
       className="flex-1"
     >
-      <Text className="flex text-lg items-center text-center">{`${reading.book} ${reading.latinContent[selectedVerse].Chapter}:${reading.latinContent[selectedVerse].Verse}`}</Text>
+      <Text className="flex text-lg items-center text-center">{`${bookName} ${chapter}:${selectedVerse}`}</Text>
     </Animated.View>
   );
 };
