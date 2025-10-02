@@ -118,15 +118,18 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           <View className="p-4">
             {/* Table Header */}
             <View className="flex-row bg-gray-100 py-2 border-b border-gray-300">
-              <Text className="flex-1 font-bold text-center text-lg">Word</Text>
               <Text className="flex-1 font-bold text-center text-lg">
-                Definition
+                Palabra
+              </Text>
+              <Text className="flex-1 font-bold text-center text-lg">
+                Significado
               </Text>
             </View>
           </View>
           <Text className="text-center text-gray-500 text-lg mt-5 mx-5">
-            You can click any words within readings to get the definition, there
-            you can also add it to your vocabulary and it will be saved here!
+            Puedes clickear cualquier palabra dentro de las lecturas para ver su
+            significado, luego puedes agregarla a tu vocabulario y se guardará
+            aquí!
           </Text>
         </View>
       </View>

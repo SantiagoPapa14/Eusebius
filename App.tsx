@@ -43,11 +43,11 @@ export const Layout = () => {
               component={HomeScreen}
               options={{ headerShown: false }}
             />
-            <Stack.Screen name="Readings" component={ReadingScreen} />
-            <Stack.Screen name="Vocabulary" component={VocabularyScreen} />
-            <Stack.Screen name="Flashcards" component={FlashcardScreen} />
-            <Stack.Screen name="Professor" component={ProfessorScreen} />
-            <Stack.Screen name="Bible" component={BibleScreen} />
+            <Stack.Screen name="Lecturas" component={ReadingScreen} />
+            <Stack.Screen name="Vocabulario" component={VocabularyScreen} />
+            <Stack.Screen name="Cartas" component={FlashcardScreen} />
+            <Stack.Screen name="Profesor" component={ProfessorScreen} />
+            <Stack.Screen name="Biblia" component={BibleScreen} />
           </>
         ) : (
           <Stack.Screen

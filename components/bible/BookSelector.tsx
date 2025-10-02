@@ -43,14 +43,14 @@ const BookSelector = ({ setBook }: { setBook: Function }) => {
             className="text-center flex-1 pt-5"
             style={{ fontFamily: "Coursive", fontSize: 42 }}
           >
-            Old Testament
+            Antiguo Testamento
           </Text>
           <BookList books={oldTestament} setBook={setBook} />
           <Text
             className="text-center flex-1 p-5"
             style={{ fontFamily: "Coursive", fontSize: 42 }}
           >
-            New Testament
+            Nuevo Testamento
           </Text>
           <BookList books={newTestament} setBook={setBook} />
           <View className="h-40" />

@@ -28,7 +28,7 @@ const BibleScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         ? chapter
           ? `${book.Book} ${chapter}`
           : `${book.Book}`
-        : "Bible",
+        : "Biblia",
       headerLeft: () => (
         <TouchableOpacity
           className="h-12 w-12 flex justify-center items-center mx-4 my-2"

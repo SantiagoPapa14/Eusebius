@@ -26,27 +26,27 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         <View className="flex-1 flex-wrap flex-row justify-center items-center">
           <NavButton
             text="Lecturas"
-            onPress={() => navigation.navigate("Readings")}
+            onPress={() => navigation.navigate("Lecturas")}
             icon="book-open"
           />
           <NavButton
             text="Profesor"
-            onPress={() => navigation.navigate("Professor")}
+            onPress={() => navigation.navigate("Profesor")}
             icon="user"
           />
           <NavButton
             text="Cartas"
-            onPress={() => navigation.navigate("Flashcards")}
+            onPress={() => navigation.navigate("Cartas")}
             icon="layers"
           />
           <NavButton
             text="Vocabulario"
-            onPress={() => navigation.navigate("Vocabulary")}
+            onPress={() => navigation.navigate("Vocabulario")}
             icon="archive"
           />
           <NavButton
             text="Bibla"
-            onPress={() => navigation.navigate("Bible")}
+            onPress={() => navigation.navigate("Biblia")}
             icon="book"
           />
           <NavButton

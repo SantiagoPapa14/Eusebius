@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import {
   View,
   Text,
@@ -8,8 +8,10 @@ import {
   PanResponder,
 } from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
+import rawLatinBible from "../constants/latin_bible.json";
+import rawSpanishBible from "../constants/spanish_bible.json";
 
-import { massReadingsType, readingType } from "../constants/EusebiusTypes";
+import { massReadingsType, localBible } from "../constants/EusebiusTypes";
 import ReadingSelector from "../components/reading/ReadingSelector";
 import VerseNavigation from "../components/reading/VerseSelector";
 import CurrentVerse from "../components/reading/CurrentVerse";
@@ -20,12 +22,16 @@ import Definition from "../components/reading/Definition";
 import { useAuth } from "../context/AuthContext";
 
 const ReadingScreen = () => {
+  const latinBible: localBible = rawLatinBible as localBible;
+  const spanishBible: localBible = rawSpanishBible as localBible;
+
   const { secureFetch } = useAuth();
   if (!secureFetch) return null;
   const [readings, setReadings] = useState<massReadingsType>();
   const [selectedReading, setSelectedReading] =
     useState<keyof massReadingsType>("gospel");
-  const [selectedVerse, setSelectedVerse] = useState(0);
+  const [selectedVerse, setSelectedVerse] = useState(1);
+  const [selectedReadingPart, setSelectedReadingPart] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -51,6 +57,28 @@ const ReadingScreen = () => {
     fetchData();
   }, []);
 
+  const latinContent = useMemo(() => {
+    if (!readings) return null;
+    const book = readings![selectedReading]?.book;
+    const chapterIndex =
+      readings![selectedReading]?.verses[selectedReadingPart].chapter;
+    const chapter =
+      latinBible[book!]?.chapters?.[chapterIndex?.toString() || ""];
+    const verse = chapter![selectedVerse.toString() || ""];
+    return verse;
+  }, [readings, selectedReading, selectedReadingPart, selectedVerse]);
+
+  const spanishContent = useMemo(() => {
+    if (!readings) return null;
+    const book = readings![selectedReading]?.book;
+    const chapterIndex =
+      readings![selectedReading]?.verses[selectedReadingPart].chapter;
+    const chapter =
+      spanishBible[book!]?.chapters?.[chapterIndex?.toString() || ""];
+    const verse = chapter![selectedVerse.toString() || ""];
+    return verse;
+  }, [readings, selectedReading, selectedReadingPart, selectedVerse]);
+
   if (loading) return <SkeletonReader />;
 
   if (error)
@@ -60,18 +88,42 @@ const ReadingScreen = () => {
       </View>
     );
 
-  if (
-    !readings ||
-    !readings[selectedReading] ||
-    !readings[selectedReading].verses ||
-    !readings[selectedReading].latinContent ||
-    !readings[selectedReading].englishContent
-  )
-    return null;
-
   const slideToNextVerse = (direction: "prev" | "next") => {
-    if (direction === "prev" && isFirstVerse()) return;
-    if (direction === "next" && isLastVerse()) return;
+    if (direction === "next") {
+      if (
+        readings![selectedReading]?.verses[selectedReadingPart].end ===
+        selectedVerse
+      ) {
+        if (
+          selectedReadingPart !==
+          readings![selectedReading]?.verses.length! - 1
+        ) {
+          setSelectedReadingPart(selectedReadingPart + 1);
+          const newStart =
+            readings![selectedReading]?.verses[selectedReadingPart + 1].start ||
+            0;
+          setSelectedVerse(newStart);
+        }
+        return;
+      }
+    }
+
+    if (direction === "prev") {
+      if (
+        readings![selectedReading]?.verses[selectedReadingPart].start ===
+        selectedVerse
+      ) {
+        if (selectedReadingPart !== 0) {
+          setSelectedReadingPart(selectedReadingPart - 1);
+          const newStart =
+            readings![selectedReading]?.verses[selectedReadingPart - 1].end ||
+            0;
+          setSelectedVerse(newStart);
+        }
+        return;
+      }
+    }
+
     setSelectedVerse((prev) => (direction === "next" ? prev + 1 : prev - 1));
 
     const toValue = direction === "prev" ? 400 : -400;
@@ -111,7 +163,7 @@ const ReadingScreen = () => {
       duration: 300,
       useNativeDriver: true,
     }).start(() => {
-      setSelectedVerse(0);
+      setSelectedVerse(1);
       setSelectedReading(readingType);
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -120,22 +172,6 @@ const ReadingScreen = () => {
       }).start(() => setIsAnimating(false));
     });
   };
-
-  function isFirstVerse() {
-    return selectedVerse === 0;
-  }
-
-  function isLastVerse() {
-    if (
-      !readings ||
-      !readings[selectedReading] ||
-      !readings[selectedReading].latinContent
-    )
-      return false;
-    return (
-      selectedVerse === readings?.[selectedReading].latinContent.length - 1 ?? 0
-    );
-  }
 
   return (
     <View className="flex-1" {...panResponder.panHandlers}>
@@ -151,41 +187,37 @@ const ReadingScreen = () => {
       >
         <View className="flex-1 h-screen items-center justify-center bg-gbGray">
           <LatinText
-            content={
-              readings[selectedReading].latinContent[selectedVerse]
-                ? readings[selectedReading].latinContent[selectedVerse].Content
-                : ""
-            }
+            content={latinContent || ""}
             fadeAnim={fadeAnim}
             slideAnim={slideAnim}
             setDefinitionData={setDefinitionData}
             setDefinitionIsOpen={setDefinitionIsOpen}
           />
           <VerseNavigation
-            isFirstVerse={isFirstVerse()}
-            isLastVerse={isLastVerse()}
+            isFirstVerse={false}
+            isLastVerse={false}
             onPrevious={() => slideToNextVerse("prev")}
             onNext={() => slideToNextVerse("next")}
           >
             <CurrentVerse
-              reading={readings[selectedReading] as readingType}
+              bookName={
+                spanishBible[readings![selectedReading]?.book!]?.title! || ""
+              }
+              chapter={
+                readings![selectedReading]?.verses[selectedReadingPart].chapter!
+              }
               selectedVerse={selectedVerse}
               fadeAnim={fadeAnim}
             />
           </VerseNavigation>
           <EnglishText
-            content={
-              readings[selectedReading].englishContent[selectedVerse]
-                ? readings[selectedReading].englishContent[selectedVerse]
-                    .Content
-                : ""
-            }
+            content={spanishContent}
             fadeAnim={fadeAnim}
             slideAnim={slideAnim}
           />
         </View>
         <ReadingSelector
-          readings={readings}
+          readings={readings!}
           selectedReading={selectedReading}
           handleChangeReading={handleChangeReading}
         />
