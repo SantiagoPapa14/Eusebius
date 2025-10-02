@@ -1,20 +1,4 @@
-export type verseType = {
-  chapter: number;
-  start: number;
-  end: number;
-};
-
-type contentType = {
-  [key: number]: string;
-};
-
-export type readingType = {
-  book: string;
-  verses: Array<verseType>;
-  latinContent?: contentType;
-  spanishContent?: contentType;
-  englishContent?: contentType;
-};
+// What is returned from API
 
 export type massReadingsType = {
   psalm: readingType;
@@ -23,8 +7,26 @@ export type massReadingsType = {
   secondReading?: readingType;
 };
 
-export type localBookData = {
-  Book: string;
-  Key: string;
-  Chapters: contentType;
+export type readingType = {
+  book: keyof localBible;
+  verses: Array<verseType>;
+};
+
+export type verseType = {
+  chapter: number;
+  start: number;
+  end: number;
+};
+
+// Locally Stored Bibles
+
+export type localBible = {
+  [book: string]: {
+    title: string;
+    chapters: {
+      [chapter: string]: {
+        [verse: string]: string;
+      };
+    };
+  };
 };
