@@ -10,7 +10,7 @@ interface AuthProps {
 }
 
 const TOKEN_KEY = "api_token";
-export const API_URL = "http://10.0.0.37:4000";
+export const API_URL = "http://10.0.0.43:4000";
 const AuthContext = createContext<AuthProps>({});
 
 export const useAuth = () => {
