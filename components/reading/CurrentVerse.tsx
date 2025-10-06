@@ -1,6 +1,5 @@
-import { Text, Animated } from "react-native";
-import React, { FC } from "react";
-import { readingType } from "../../constants/EusebiusTypes";
+import { Text, Animated, StyleSheet } from "react-native";
+import React from "react";
 
 interface CurrentVerseProps {
   bookName: string;
@@ -17,14 +16,28 @@ const CurrentVerse: React.FC<CurrentVerseProps> = ({
 }) => {
   return (
     <Animated.View
-      style={{
-        opacity: fadeAnim,
-      }}
-      className="flex-1"
+      style={[
+        styles.container,
+        {
+          opacity: fadeAnim,
+        },
+      ]}
     >
-      <Text className="flex text-lg items-center text-center">{`${bookName} ${chapter}:${selectedVerse}`}</Text>
+      <Text
+        style={styles.text}
+      >{`${bookName} ${chapter}:${selectedVerse}`}</Text>
     </Animated.View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  text: {
+    fontSize: 18,
+    textAlign: "center",
+  },
+});
 
 export default CurrentVerse;

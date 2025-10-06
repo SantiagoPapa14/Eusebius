@@ -6,6 +6,7 @@ import {
   Animated,
   Easing,
   PanResponder,
+  StyleSheet,
 } from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 import rawLatinBible from "../constants/latin_bible.json";
@@ -121,23 +122,22 @@ const ReadingScreen = () => {
   if (loading) return <SkeletonReader />;
   if (error) {
     return (
-      <View className="flex-1 items-center justify-center">
-        <Text className="text-lg text-center">{error}</Text>
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
       </View>
     );
   }
   if (!verseContent || !scripture) return null;
 
   return (
-    <View className="flex-1" {...panResponder.panHandlers}>
+    <View style={styles.container} {...panResponder.panHandlers}>
       <ImageBackground
         source={require("../assets/MichaelWpp.jpg")}
-        className="flex-1"
+        style={[styles.background, { opacity: 0.1 }]}
         resizeMode="cover"
-        style={{ opacity: 0.1 }}
       />
-      <View className="absolute inset-0 flex-1 h-full justify-center">
-        <View className="flex-1 items-center justify-center bg-gbGray">
+      <View style={styles.contentWrapper}>
+        <View style={styles.readerContainer}>
           <LatinText
             content={verseContent.latin}
             fadeAnim={fadeAnim}
@@ -183,5 +183,38 @@ const ReadingScreen = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  background: {
+    flex: 1,
+  },
+  errorContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  errorText: {
+    fontSize: 18,
+    textAlign: "center",
+  },
+  contentWrapper: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    flex: 1,
+    height: "100%",
+    justifyContent: "center",
+  },
+  readerContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
 
 export default ReadingScreen;

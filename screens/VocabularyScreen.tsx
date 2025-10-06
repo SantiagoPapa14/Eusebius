@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   TextInput,
   Modal,
+  StyleSheet,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { useAuth } from "../context/AuthContext";
@@ -18,18 +19,16 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { secureFetch } = useAuth();
   if (!secureFetch) return null;
   const [data, setData] = useState<Word[]>([]);
-  const [loading, setLoading] = useState<boolean>(true); // loading state
-  const [error, setError] = useState<string | null>(null); // error state
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalWord, setModalWord] = useState("");
   const [modalDefinition, setModalDefinition] = useState("");
   const [selectedWordId, setSelectedWordId] = useState(-1);
 
   useEffect(() => {
-    // Create an async function to fetch the data
     const fetchData = async () => {
       try {
-        // Example API call
         const result = await secureFetch(`/word/all`);
         setData(result as Word[]);
       } catch (error: any) {
@@ -39,11 +38,11 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       }
     };
 
-    fetchData(); // Call the async function
+    fetchData();
   }, []);
 
   const renderItem = ({ item }: { item: Word }) => (
-    <View className="flex-row mt-1 mb-1 items-center">
+    <View style={styles.itemRow}>
       <TouchableOpacity
         onPress={() => {
           setModalWord(item.text);
@@ -51,9 +50,9 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           setSelectedWordId(item.id);
           setModalVisible(true);
         }}
-        className="bg-white py-2 opacity-80 m-1 rounded-lg border shadow border-gray-200 flex-1 flex-row"
+        style={styles.itemButton}
       >
-        <Text className="flex-1 text-center text-lg">
+        <Text style={styles.itemText}>
           {item.text.charAt(0).toUpperCase() + item.text.slice(1)}
         </Text>
       </TouchableOpacity>
@@ -64,12 +63,12 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           setSelectedWordId(item.id);
           setModalVisible(true);
         }}
-        className="bg-white py-2 opacity-80 m-1 rounded-lg border shadow border-gray-200 flex-1 flex-row"
+        style={styles.itemButton}
       >
-        <Text className="flex-1 text-center text-lg">{item.translation}</Text>
+        <Text style={styles.itemText}>{item.translation}</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        className="w-10 h-10 m-1 bg-white rounded-full border shadow border-gray-200 flex justify-center items-center"
+        style={styles.deleteButton}
         onPress={() => handleWordDelete(item)}
       >
         <Icon name={"trash-2"} size={18} color={"red"} />
@@ -79,7 +78,7 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center">
+      <View style={styles.centerContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
@@ -87,8 +86,8 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   if (error) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <Text className="text-red-500">{`Error: ${error}`}</Text>
+      <View style={styles.centerContainer}>
+        <Text style={styles.errorText}>{`Error: ${error}`}</Text>
       </View>
     );
   }
@@ -148,44 +147,36 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   return (
-    <View className="flex-1">
+    <View style={styles.container}>
       <ImageBackground
         source={require("../assets/MichaelWpp.jpg")}
-        className="flex-1"
+        style={[styles.background, { opacity: 0.05 }]}
         resizeMode="cover"
-        style={{ opacity: 0.05 }}
       />
-      <View
-        className="w-screen h-screen"
-        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
-      >
-        <View className="p-4">
+      <View style={styles.overlay}>
+        <View style={styles.content}>
           {/* Table Header */}
-          <View className="flex-row bg-gray-100 py-2 border-b border-gray-300 mr-12">
-            <Text className="flex-1 font-bold text-center text-lg">
-              Palabra
-            </Text>
-            <Text className="flex-1 font-bold text-center text-lg">
-              Significado
-            </Text>
+          <View style={styles.tableHeader}>
+            <Text style={styles.headerText}>Palabra</Text>
+            <Text style={styles.headerText}>Significado</Text>
           </View>
 
           {data.length === 0 && (
-            <Text className="text-center text-gray-500 text-lg mt-5 mx-5">
+            <Text style={styles.emptyMessage}>
               Puedes clickear cualquier palabra dentro de las lecturas para ver
               su significado, luego puedes agregarla a tu vocabulario y se
-              guardará aquí!
+              guardará aquí!
             </Text>
           )}
 
           <FlatList
-            className="mt-5"
+            style={styles.list}
             data={data}
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}
           />
 
-          <View className="absolute w-screen h-screen flex items-end justify-end">
+          <View style={styles.fabContainer}>
             <TouchableOpacity
               onPress={() => {
                 setModalVisible(true);
@@ -193,7 +184,7 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                 setModalDefinition("");
                 setSelectedWordId(-1);
               }}
-              className="mb-32 mr-8 w-16 h-16 flex justify-center items-center bg-white opacity-80 rounded-full border shadow border-gray-200"
+              style={styles.fab}
             >
               <Icon name={"plus"} size={18} color={"#000"} />
             </TouchableOpacity>
@@ -210,33 +201,31 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               setModalDefinition("");
             }}
           >
-            <View className="flex-1 justify-center items-center bg-black/50">
-              <View className="w-4/5 bg-white rounded-lg p-6">
-                <Text className="text-lg font-bold mb-4">Palabra:</Text>
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalLabel}>Palabra:</Text>
                 <TextInput
                   placeholder="Palabra"
                   value={modalWord}
                   onChangeText={(text) => setModalWord(text)}
-                  className="border border-gray-300 rounded-lg p-2 mb-4"
-                ></TextInput>
-                <Text className="text-lg font-bold mb-4">Significado:</Text>
+                  style={styles.modalInput}
+                />
+                <Text style={styles.modalLabel}>Significado:</Text>
                 <TextInput
                   placeholder="Significado"
                   value={modalDefinition}
                   onChangeText={(text) => setModalDefinition(text)}
-                  className="border border-gray-300 rounded-lg p-2 mb-4"
-                ></TextInput>
-                <View className="flex-row flex items-center justify-center space-x-10">
+                  style={styles.modalInput}
+                />
+                <View style={styles.modalButtonRow}>
                   <TouchableOpacity
-                    className="px-4 py-2 bg-gray-400 rounded-lg w-2/5"
+                    style={styles.modalSaveButton}
                     onPress={() => handleWordSave()}
                   >
-                    <Text className="text-white text-center font-bold">
-                      Guardar
-                    </Text>
+                    <Text style={styles.modalButtonText}>Guardar</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    className="px-4 py-2 bg-gray-500 rounded-lg w-2/5"
+                    style={styles.modalCloseButton}
                     onPress={() => {
                       setModalVisible(false);
                       setSelectedWordId(-1);
@@ -244,9 +233,7 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                       setModalDefinition("");
                     }}
                   >
-                    <Text className="text-white text-center font-bold">
-                      Cerrar
-                    </Text>
+                    <Text style={styles.modalButtonText}>Cerrar</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -257,5 +244,185 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  background: {
+    flex: 1,
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
+  },
+  content: {
+    padding: 16,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    color: "#ef4444",
+  },
+  tableHeader: {
+    flexDirection: "row",
+    backgroundColor: "#f3f4f6",
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#d1d5db",
+    marginRight: 48,
+  },
+  headerText: {
+    flex: 1,
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 18,
+  },
+  emptyMessage: {
+    textAlign: "center",
+    color: "#6b7280",
+    fontSize: 18,
+    marginTop: 20,
+    marginHorizontal: 20,
+  },
+  list: {
+    marginTop: 20,
+  },
+  itemRow: {
+    flexDirection: "row",
+    marginTop: 4,
+    marginBottom: 4,
+    alignItems: "center",
+  },
+  itemButton: {
+    backgroundColor: "#ffffff",
+    paddingVertical: 8,
+    margin: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+    borderColor: "#e5e7eb",
+    flex: 1,
+    flexDirection: "row",
+  },
+  itemText: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 18,
+  },
+  deleteButton: {
+    width: 40,
+    height: 40,
+    margin: 4,
+    backgroundColor: "#ffffff",
+    borderRadius: 20,
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+    borderColor: "#e5e7eb",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fabContainer: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    top: "390%",
+    right: 0,
+    alignItems: "flex-end",
+    justifyContent: "flex-end",
+  },
+  fab: {
+    marginBottom: 128,
+    marginRight: 32,
+    width: 64,
+    height: 64,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+    opacity: 0.8,
+    borderRadius: 32,
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+    borderColor: "#e5e7eb",
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: "80%",
+    backgroundColor: "#ffffff",
+    borderRadius: 8,
+    padding: 24,
+  },
+  modalLabel: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 16,
+  },
+  modalButtonRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 40,
+  },
+  modalSaveButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: "#9ca3af",
+    borderRadius: 8,
+    width: "40%",
+  },
+  modalCloseButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: "#6b7280",
+    borderRadius: 8,
+    width: "40%",
+  },
+  modalButtonText: {
+    color: "#ffffff",
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+});
 
 export default VocabularyScreen;

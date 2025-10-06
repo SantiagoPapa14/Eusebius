@@ -1,22 +1,13 @@
-import React, { useEffect } from "react";
+import React from "react";
+import { TouchableOpacity, StyleSheet } from "react-native";
 import BookSelector from "../components/bible/BookSelector";
 import ChapterSelector from "../components/bible/ChapterSelector";
 import ChapterReader from "../components/bible/ChapterReader";
 import Icon from "react-native-vector-icons/Feather";
-import { TouchableOpacity } from "react-native";
-
-const SWIPE_THRESHOLD = 30;
-
-const ANIMATION_DURATION = 200;
-const SLIDE_DISTANCE = 600;
-
-const ANIMATION_CONFIG = {
-  duration: ANIMATION_DURATION,
-  useNativeDriver: true,
-};
+import { LocalBook } from "../constants/EusebiusTypes";
 
 const BibleScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [book, setBook] = React.useState<{ Book: string; Key: string }>();
+  const [book, setBook] = React.useState<LocalBook>();
   const [chapter, setChapter] = React.useState();
 
   const handleGoBack = () => {
@@ -39,10 +30,7 @@ const BibleScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           : `${book.Book}`
         : "Biblia",
       headerLeft: () => (
-        <TouchableOpacity
-          className="h-12 w-12 flex justify-center items-center mx-4 my-2"
-          onPressIn={handleGoBack}
-        >
+        <TouchableOpacity style={styles.backButton} onPressIn={handleGoBack}>
           <Icon name="arrow-left" size={24} color="black" />
         </TouchableOpacity>
       ),
@@ -59,5 +47,16 @@ const BibleScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     return <BookSelector setBook={setBook} />;
   }
 };
+
+const styles = StyleSheet.create({
+  backButton: {
+    height: 48,
+    width: 48,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 16,
+    marginVertical: 8,
+  },
+});
 
 export default BibleScreen;

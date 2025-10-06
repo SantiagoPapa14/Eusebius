@@ -1,6 +1,7 @@
-import { Text, Animated, TouchableOpacity } from "react-native";
+import { Text, Animated, TouchableOpacity, StyleSheet } from "react-native";
 import { hideMessage, showMessage } from "react-native-flash-message";
 import React, { FC } from "react";
+
 interface LatinTextProps {
   content: string;
   fadeAnim?: Animated.Value;
@@ -21,7 +22,7 @@ const renderText = (
         handleWordPress(word, setDefinitionData, setDefinitionIsOpen)
       }
     >
-      <Text className="text-lg">{word} </Text>
+      <Text style={styles.word}>{word} </Text>
     </TouchableOpacity>
   ));
 };
@@ -32,10 +33,9 @@ const handleWordPress = async (
   setDefinitionIsOpen: any,
 ) => {
   showMessage({
-    message: "Cargando traducción...",
+    message: "Cargando traducción...",
     type: "info",
   });
-
   const cleanWord = replaceSpecialChars(
     word
       .replaceAll(":", "")
@@ -47,13 +47,10 @@ const handleWordPress = async (
       .replace(/[^\p{L}]/gu, "")
       .trim(),
   );
-
   const url = `https://www.didacterion.com/esddbslt.php?palabra=${cleanWord}`;
   const response = await fetch(url);
   const html = await response.text();
-
   const { full_name, translation } = extractDataFromHtml(html);
-
   setDefinitionData({
     short_name: cleanWord,
     full_name,
@@ -70,7 +67,6 @@ function extractDataFromHtml(html: string) {
   const translation = html.match(
     /<input[^>]*id=['"]sigpal1['"][^>]*value=['"]([^'"]*)/,
   );
-
   return {
     full_name: full_name ? full_name[1] : "",
     translation: translation ? translation[1] : "",
@@ -97,7 +93,6 @@ function replaceSpecialChars(str: string) {
     Ö: "O",
     ß: "ss",
   };
-
   return str.replace(
     /æ|Æ|ø|Ø|å|Å|œ|Œ|þ|Þ|ð|Ð|ü|Ü|ö|Ö|ß/g,
     (match) => specialChars[match as keyof typeof specialChars],
@@ -113,17 +108,37 @@ const LatinText: React.FC<LatinTextProps> = ({
 }) => {
   return (
     <Animated.View
-      style={{
-        opacity: fadeAnim ?? 1,
-        transform: [{ translateX: slideAnim }],
-      }}
-      className="flex-1 items-center justify-center w-screen pr-5 pl-5"
+      style={[
+        styles.container,
+        {
+          opacity: fadeAnim ?? 1,
+          transform: [{ translateX: slideAnim }],
+        },
+      ]}
     >
-      <Text className="text-lg text-center">
+      <Text style={styles.text}>
         {renderText(content, setDefinitionData, setDefinitionIsOpen)}
       </Text>
     </Animated.View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    paddingRight: 20,
+    paddingLeft: 20,
+  },
+  text: {
+    fontSize: 18,
+    textAlign: "center",
+  },
+  word: {
+    fontSize: 18,
+  },
+});
 
 export default LatinText;

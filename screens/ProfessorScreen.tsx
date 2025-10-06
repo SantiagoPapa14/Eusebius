@@ -6,6 +6,7 @@ import {
   FlatList,
   ImageBackground,
   Animated,
+  StyleSheet,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import Markdown from "react-native-markdown-display";
@@ -59,7 +60,7 @@ const ProfessorScreen = () => {
             duration: 500,
             useNativeDriver: true,
           }),
-        ])
+        ]),
       ).start();
 
       //Here is where the data transfer happens
@@ -95,32 +96,34 @@ const ProfessorScreen = () => {
   }, [messages]);
 
   return (
-    <View className="flex-1">
+    <View style={styles.container}>
       <ImageBackground
         source={require("../assets/MichaelWpp.jpg")}
-        className="flex-1"
+        style={[styles.background, { opacity: 0.15 }]}
         resizeMode="cover"
-        style={{ opacity: 0.15 }}
       />
-      <View
-        className="w-full h-full"
-        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
-      >
-        <View className="flex-1">
+      <View style={styles.overlay}>
+        <View style={styles.chatContainer}>
           <FlatList
             ref={flatListRef} // Attach the ref to the FlatList
             data={messages}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <View
-                className={`flex-row ${
-                  item.sender === "You" ? "justify-end" : "justify-start"
-                } mb-4`}
+                style={[
+                  styles.messageRow,
+                  item.sender === "You"
+                    ? styles.messageRowEnd
+                    : styles.messageRowStart,
+                ]}
               >
                 <View
-                  className={`rounded-lg border border-gray-300 mx-4 ${
-                    item.sender === "You" ? "bg-white" : "bg-gray-200"
-                  } p-4 max-w-[75%]`}
+                  style={[
+                    styles.messageBubble,
+                    item.sender === "You"
+                      ? styles.messageBubbleUser
+                      : styles.messageBubbleBot,
+                  ]}
                 >
                   <Markdown style={{ text: { fontSize: 16 } }}>
                     {item.text}
@@ -133,14 +136,15 @@ const ProfessorScreen = () => {
 
           {/* Display Typing... if bot is typing */}
           {isTyping && (
-            <View className="flex-row justify-start mb-4">
-              <View className="rounded-lg border border-gray-300 mx-4 bg-gray-200 p-4 max-w-[75%]">
+            <View style={styles.typingContainer}>
+              <View style={styles.typingBubble}>
                 <Animated.Text
-                  style={{
-                    color: "gray",
-                    fontSize: 16,
-                    opacity: typingAnimation,
-                  }}
+                  style={[
+                    styles.typingText,
+                    {
+                      opacity: typingAnimation,
+                    },
+                  ]}
                 >
                   Typing...
                 </Animated.Text>
@@ -148,17 +152,14 @@ const ProfessorScreen = () => {
             </View>
           )}
 
-          <View className="flex-row items-center bg-white border-t border-gray-300 p-4">
+          <View style={styles.inputContainer}>
             <TextInput
               value={message}
               onChangeText={setMessage}
               placeholder="Type a message"
-              className="flex-1 bg-white p-3 rounded-lg shadow-lg border border-gray-300"
+              style={styles.textInput}
             />
-            <TouchableOpacity
-              onPress={handleSend}
-              className="ml-4 bg-gray-400 p-3 rounded-full flex justify-center items-center"
-            >
+            <TouchableOpacity onPress={handleSend} style={styles.sendButton}>
               <Icon name="send" size={24} color="white" />
             </TouchableOpacity>
           </View>
@@ -167,5 +168,100 @@ const ProfessorScreen = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  background: {
+    flex: 1,
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
+  },
+  chatContainer: {
+    flex: 1,
+  },
+  messageRow: {
+    flexDirection: "row",
+    marginBottom: 16,
+  },
+  messageRowEnd: {
+    justifyContent: "flex-end",
+  },
+  messageRowStart: {
+    justifyContent: "flex-start",
+  },
+  messageBubble: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    marginHorizontal: 16,
+    padding: 16,
+    maxWidth: "75%",
+  },
+  messageBubbleUser: {
+    backgroundColor: "#ffffff",
+  },
+  messageBubbleBot: {
+    backgroundColor: "#e5e7eb",
+  },
+  typingContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    marginBottom: 16,
+  },
+  typingBubble: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    marginHorizontal: 16,
+    backgroundColor: "#e5e7eb",
+    padding: 16,
+    maxWidth: "75%",
+  },
+  typingText: {
+    color: "gray",
+    fontSize: 16,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+    borderTopWidth: 1,
+    borderTopColor: "#d1d5db",
+    padding: 16,
+  },
+  textInput: {
+    flex: 1,
+    backgroundColor: "#ffffff",
+    padding: 12,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+  },
+  sendButton: {
+    marginLeft: 16,
+    backgroundColor: "#9ca3af",
+    padding: 12,
+    borderRadius: 9999,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
 
 export default ProfessorScreen;

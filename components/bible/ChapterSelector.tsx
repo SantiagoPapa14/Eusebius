@@ -5,7 +5,11 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
+  StyleSheet,
+  Dimensions,
 } from "react-native";
+
+const { width, height } = Dimensions.get("window");
 
 const ChapterList = ({
   book,
@@ -15,14 +19,14 @@ const ChapterList = ({
   setChapter: Function;
 }) => {
   return (
-    <View className="flex flex-row flex-wrap items-center justify-center">
+    <View style={styles.chapterListContainer}>
       {Array.from({ length: Number(book.Chapters) }).map((_, i) => (
         <TouchableOpacity
           key={i}
-          className="w-16 h-16 bg-white rounded rounded-full flex justify-center items-center mx-4 my-2 shadow shadow-lg shadow-gray-400"
+          style={styles.chapterButton}
           onPress={() => setChapter(i + 1)}
         >
-          <Text className="text-center">{(i + 1).toString()}</Text>
+          <Text style={styles.chapterText}>{(i + 1).toString()}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -37,30 +41,70 @@ const ChapterSelector = ({
   setChapter: Function;
 }) => {
   return (
-    <View className="flex-1">
+    <View style={styles.container}>
       <ImageBackground
         source={require("../../assets/MichaelWpp.jpg")}
-        className="flex-1"
+        style={styles.backgroundImage}
         resizeMode="cover"
-        style={{ opacity: 0.2 }}
       />
-      <View
-        className="w-screen h-screen"
-        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
-      >
+      <View style={styles.overlay}>
         <ScrollView>
-          <Text
-            className="text-center flex-1 p-5"
-            style={{ fontFamily: "Coursive", fontSize: 42 }}
-          >
-            {book.Book}
-          </Text>
+          <Text style={styles.bookTitle}>{book.Book}</Text>
           <ChapterList book={book} setChapter={setChapter} />
-          <View className="h-40" />
+          <View style={{ height: 40 }} />
         </ScrollView>
       </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  backgroundImage: {
+    flex: 1,
+    opacity: 0.2,
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: width,
+    height: height,
+  },
+  bookTitle: {
+    textAlign: "center",
+    padding: 20,
+    fontSize: 42,
+    fontFamily: "Coursive",
+  },
+  chapterListContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  chapterButton: {
+    width: 64,
+    height: 64,
+    backgroundColor: "white",
+    borderRadius: 32,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 18,
+    marginVertical: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  chapterText: {
+    textAlign: "center",
+  },
+});
 
 export default ChapterSelector;

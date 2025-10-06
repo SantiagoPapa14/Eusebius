@@ -5,6 +5,7 @@ import {
   Dimensions,
   Text,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import Flashcard from "../components/flashcard/Flashcard";
@@ -14,6 +15,7 @@ import { Word } from "../constants/EusebiusTypes";
 const FlashcardScreen = () => {
   const { secureFetch } = useAuth();
   if (!secureFetch) return null;
+
   const width = Dimensions.get("window").width;
   const [data, setData] = useState<Word[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -32,13 +34,12 @@ const FlashcardScreen = () => {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center">
+      <View style={styles.centerContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
@@ -46,30 +47,26 @@ const FlashcardScreen = () => {
 
   if (error) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <Text className="text-red-500">{`Error: ${error}`}</Text>
+      <View style={styles.centerContainer}>
+        <Text style={styles.errorText}>{`Error: ${error}`}</Text>
       </View>
     );
   }
 
   if (data.length === 0) {
     return (
-      <View className="flex-1">
+      <View style={styles.container}>
         <ImageBackground
           source={require("../assets/MichaelWpp.jpg")}
-          className="flex-1"
+          style={[styles.background, { opacity: 0.05 }]}
           resizeMode="cover"
-          style={{ opacity: 0.05 }}
         />
-        <View
-          className="w-full h-full flex items-center justify-center"
-          style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
-        >
-          <View className="mb-20">
-            <Text className="text-center text-gray-500 text-lg mt-5 m-5">
+        <View style={styles.overlay}>
+          <View style={styles.emptyMessageContainer}>
+            <Text style={styles.emptyMessageText}>
               Puedes clickear cualquier palabra dentro de las lecturas para ver
               su significado, luego puedes agregarla a tu vocabulario y
-              repasarla aquí!
+              repasarla aquí!
             </Text>
           </View>
         </View>
@@ -78,18 +75,14 @@ const FlashcardScreen = () => {
   }
 
   return (
-    <View className="flex-1">
+    <View style={styles.container}>
       <ImageBackground
         source={require("../assets/MichaelWpp.jpg")}
-        className="flex-1"
+        style={[styles.background, { opacity: 0.15 }]}
         resizeMode="cover"
-        style={{ opacity: 0.15 }}
       />
-      <View
-        className="w-screen h-screen"
-        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
-      >
-        <View className="flex-1 justify-center items-center">
+      <View style={styles.fullScreenOverlay}>
+        <View style={styles.carouselContainer}>
           <Carousel
             loop
             width={width}
@@ -97,7 +90,7 @@ const FlashcardScreen = () => {
             data={data}
             // scrollAnimationDuration={500}
             renderItem={({ item }) => (
-              <View className="p-6 mb-20 flex-1 flex justify-center items-center">
+              <View style={styles.flashcardWrapper}>
                 <Flashcard front={item.text} back={item.translation} />
               </View>
             )}
@@ -107,5 +100,64 @@ const FlashcardScreen = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  background: {
+    flex: 1,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    color: "#ef4444",
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyMessageContainer: {
+    marginBottom: 80,
+  },
+  emptyMessageText: {
+    textAlign: "center",
+    color: "#6b7280",
+    fontSize: 18,
+    marginTop: 20,
+    margin: 20,
+  },
+  fullScreenOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
+  },
+  carouselContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  flashcardWrapper: {
+    padding: 24,
+    marginBottom: 80,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
 
 export default FlashcardScreen;

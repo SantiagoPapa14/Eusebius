@@ -5,20 +5,20 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
+  StyleSheet,
 } from "react-native";
-
 import { newTestament, oldTestament } from "../../constants/Books";
 
 const BookList = ({ books, setBook }: { books: any; setBook: Function }) => {
   return (
-    <View className="flex flex-row flex-wrap items-center justify-center">
+    <View style={styles.bookListContainer}>
       {books.map((book: any, index: number) => (
         <TouchableOpacity
           key={book.Book || index}
-          className="w-1/3 h-16 bg-white rounded rounded-full flex justify-center items-center mx-4 my-2 shadow shadow-lg shadow-gray-400"
+          style={styles.bookButton}
           onPress={() => setBook(book)}
         >
-          <Text className="text-center">{book.Book}</Text>
+          <Text style={styles.bookText}>{book.Book}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -27,37 +27,79 @@ const BookList = ({ books, setBook }: { books: any; setBook: Function }) => {
 
 const BookSelector = ({ setBook }: { setBook: Function }) => {
   return (
-    <View className="flex-1">
+    <View style={styles.container}>
       <ImageBackground
         source={require("../../assets/MichaelWpp.jpg")}
-        className="flex-1"
+        style={[styles.background, { opacity: 0.2 }]}
         resizeMode="cover"
-        style={{ opacity: 0.2 }}
       />
-      <View
-        className="w-screen h-screen"
-        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
-      >
+      <View style={styles.overlay}>
         <ScrollView>
-          <Text
-            className="text-center flex-1 pt-5"
-            style={{ fontFamily: "Coursive", fontSize: 42 }}
-          >
-            Antiguo Testamento
-          </Text>
+          <Text style={styles.heading}>Antiguo Testamento</Text>
           <BookList books={oldTestament} setBook={setBook} />
-          <Text
-            className="text-center flex-1 p-5"
-            style={{ fontFamily: "Coursive", fontSize: 42 }}
-          >
-            Nuevo Testamento
-          </Text>
+          <Text style={styles.heading}>Nuevo Testamento</Text>
           <BookList books={newTestament} setBook={setBook} />
-          <View className="h-40" />
+          <View style={styles.bottomSpacer} />
         </ScrollView>
       </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  background: {
+    flex: 1,
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
+  },
+  bookListContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bookButton: {
+    width: "33.333333%",
+    height: 64,
+    backgroundColor: "#ffffff",
+    borderRadius: 9999,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 16,
+    marginVertical: 8,
+    shadowColor: "#9ca3af",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  bookText: {
+    textAlign: "center",
+  },
+  heading: {
+    textAlign: "center",
+    flex: 1,
+    paddingTop: 20,
+    paddingBottom: 20,
+    fontFamily: "Coursive",
+    fontSize: 42,
+  },
+  bottomSpacer: {
+    height: 160,
+  },
+});
 
 export default BookSelector;

@@ -1,4 +1,4 @@
-import { Text, Animated } from "react-native";
+import { Text, Animated, StyleSheet } from "react-native";
 import React from "react";
 
 interface EnglishTextProps {
@@ -14,15 +14,33 @@ const EnglishText: React.FC<EnglishTextProps> = ({
 }) => {
   return (
     <Animated.View
-      style={{
-        opacity: fadeAnim ?? 1,
-        transform: [{ translateX: slideAnim }],
-      }}
-      className="flex-1 items-center justify-center w-screen mt-10 pr-5 pl-5"
+      style={[
+        styles.container,
+        {
+          opacity: fadeAnim ?? 1,
+          transform: [{ translateX: slideAnim }],
+        },
+      ]}
     >
-      <Text className="text-lg text-center">{content}</Text>
+      <Text style={styles.text}>{content}</Text>
     </Animated.View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    marginTop: 40,
+    paddingRight: 20,
+    paddingLeft: 20,
+  },
+  text: {
+    fontSize: 18,
+    textAlign: "center",
+  },
+});
 
 export default EnglishText;

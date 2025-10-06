@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   Image,
+  StyleSheet,
 } from "react-native";
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -25,56 +26,107 @@ const LoginScreen = () => {
   };
 
   return (
-    <View className="flex-1">
+    <View style={styles.container}>
       <ImageBackground
         source={require("../assets/MichaelWpp.jpg")}
-        className="flex-1"
+        style={[styles.background, { opacity: 0.1 }]}
         resizeMode="cover"
-        style={{ opacity: 0.1 }}
       />
-      <View
-        className="w-full h-full flex justify-center items-center"
-        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
-      >
-        <View className="h-1/5 w-screen">
+      <View style={styles.overlay}>
+        <View style={styles.logoContainer}>
           <Image
             source={require("../assets/LogoHQ.png")}
-            className="w-full h-full object-cover rounded-full"
+            style={styles.logo}
+            resizeMode="cover"
           />
         </View>
-
-        <View className="border border-gray-300 bg-white shadow-lg rounded-lg w-2/3 mt-5">
+        <View style={styles.inputContainer}>
           <TextInput
-            className="p-2"
+            style={styles.input}
             placeholder="Correo"
             onChangeText={setEmail}
           />
         </View>
-        <View className="border border-gray-300 bg-white shadow-lg rounded-lg w-2/3 mt-5">
+        <View style={styles.inputContainer}>
           <TextInput
-            className="p-2"
-            placeholder="Contraseña"
+            style={styles.input}
+            placeholder="Contraseña"
             secureTextEntry={true}
             onChangeText={setPassword}
           />
         </View>
-        <View className="mt-5 flex flex-row">
-          <TouchableOpacity
-            className="bg-gray-400 rounded-lg p-4 m-2"
-            onPress={login}
-          >
-            <Text className="text-white">Iniciar Sesión</Text>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.button} onPress={login}>
+            <Text style={styles.buttonText}>Iniciar Sesión</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            className="bg-gray-400 rounded-lg p-4 m-2"
-            onPress={register}
-          >
-            <Text className="text-white">Registrarse</Text>
+          <TouchableOpacity style={styles.button} onPress={register}>
+            <Text style={styles.buttonText}>Registrarse</Text>
           </TouchableOpacity>
         </View>
       </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  background: {
+    flex: 1,
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  logoContainer: {
+    height: "20%",
+    width: "100%",
+  },
+  logo: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 9999,
+  },
+  inputContainer: {
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    backgroundColor: "#ffffff",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 5,
+    borderRadius: 8,
+    width: "66.666667%",
+    marginTop: 20,
+  },
+  input: {
+    padding: 8,
+  },
+  buttonRow: {
+    marginTop: 20,
+    flexDirection: "row",
+  },
+  button: {
+    backgroundColor: "#9ca3af",
+    borderRadius: 8,
+    padding: 16,
+    margin: 8,
+  },
+  buttonText: {
+    color: "#ffffff",
+  },
+});
 
 export default LoginScreen;

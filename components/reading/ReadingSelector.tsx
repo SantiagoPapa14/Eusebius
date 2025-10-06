@@ -1,5 +1,5 @@
 import type { DailyMassScripture } from "../../constants/EusebiusTypes";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
 
 const title: Record<keyof DailyMassScripture, string> = {
@@ -16,10 +16,10 @@ const SelectReading: React.FC<{
 }> = ({ highlighted, reading, handleChangeReading }) => {
   return (
     <TouchableOpacity
-      className="flex-1 items-center justify-center h-20"
+      style={styles.selectButton}
       onPress={() => handleChangeReading(reading)}
     >
-      <Text className={highlighted ? "font-bold text-base" : ""}>
+      <Text style={highlighted ? styles.highlightedText : styles.normalText}>
         {title[reading as keyof DailyMassScripture]}
       </Text>
     </TouchableOpacity>
@@ -32,7 +32,7 @@ const ReadingSelector: React.FC<{
   handleChangeReading: (reading: keyof DailyMassScripture) => void;
 }> = ({ readings, selectedReading, handleChangeReading }) => {
   return (
-    <View className="flex-row justify-center items-center bg-white h-20 w-screen">
+    <View style={styles.container}>
       {Object.keys(readings).map((reading) => {
         const readingKey = reading as keyof DailyMassScripture;
         if (readings[readingKey] === null) return null;
@@ -48,5 +48,29 @@ const ReadingSelector: React.FC<{
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+    height: 80,
+    width: "100%",
+  },
+  selectButton: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    height: 80,
+  },
+  highlightedText: {
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  normalText: {
+    fontSize: 16,
+  },
+});
 
 export default ReadingSelector;

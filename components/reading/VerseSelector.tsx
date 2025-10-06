@@ -1,13 +1,13 @@
 import React from "react";
-import { View, TouchableOpacity } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons"; // Make sure to import your Icon component
+import { View, TouchableOpacity, StyleSheet } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 interface VerseNavigationProps {
   isFirstVerse: boolean;
   isLastVerse: boolean;
   onNext: () => void;
   onPrevious: () => void;
-  children?: React.ReactNode; // Add children prop
+  children?: React.ReactNode;
 }
 
 const VerseNavigation: React.FC<VerseNavigationProps> = ({
@@ -18,9 +18,9 @@ const VerseNavigation: React.FC<VerseNavigationProps> = ({
   children,
 }) => {
   return (
-    <View className="flex-row justify-center items-center rounded-full bg-white h-20 w-3/4">
+    <View style={styles.container}>
       <TouchableOpacity
-        className="mx-2"
+        style={styles.button}
         onPress={onPrevious}
         disabled={isFirstVerse}
       >
@@ -32,7 +32,7 @@ const VerseNavigation: React.FC<VerseNavigationProps> = ({
       </TouchableOpacity>
       {children}
       <TouchableOpacity
-        className="mx-2"
+        style={styles.button}
         onPress={onNext}
         disabled={isLastVerse}
       >
@@ -45,5 +45,20 @@ const VerseNavigation: React.FC<VerseNavigationProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 9999,
+    backgroundColor: "#ffffff",
+    height: 80,
+    width: "75%",
+  },
+  button: {
+    marginHorizontal: 8,
+  },
+});
 
 export default VerseNavigation;
