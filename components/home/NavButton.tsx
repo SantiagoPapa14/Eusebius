@@ -36,7 +36,7 @@ const NavButton = ({ text, onPress, icon, disabled = false }: Props) => {
         }}
       >
         <Icon name={icon} size={80} color={"black"} />
-        <Text className="text-2xl">{text}</Text>
+        <Text style={{ fontSize: 20 }}>{text}</Text>
       </TouchableOpacity>
     </View>
   );
