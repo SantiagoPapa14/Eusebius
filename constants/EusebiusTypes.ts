@@ -1,23 +1,3 @@
-// What is returned from API
-
-export type massReadingsType = {
-  psalm: readingType;
-  gospel: readingType;
-  firstReading: readingType;
-  secondReading?: readingType;
-};
-
-export type readingType = {
-  book: keyof localBible;
-  verses: Array<verseType>;
-};
-
-export type verseType = {
-  chapter: number;
-  start: number;
-  end: number;
-};
-
 // Locally Stored Bibles
 
 export type localBible = {
@@ -30,3 +10,39 @@ export type localBible = {
     };
   };
 };
+
+export interface LocalBook {
+  Book: string;
+  Chapters: string;
+  Key: string;
+}
+
+// API return types
+
+export interface DailyMassScripture {
+  psalm?: Reading | null;
+  gospel?: Reading | null;
+  firstReading?: Reading | null;
+  secondReading?: Reading | null;
+}
+
+export interface Reading {
+  book?: string | null;
+  extracts?: BookExtract[] | null;
+}
+
+export interface BookExtract {
+  chapter?: string | null;
+  verses?: VerseRange | null;
+}
+
+export interface VerseRange {
+  start: string;
+  end: string;
+}
+
+export interface Word {
+  id: number;
+  text: string;
+  translation: string;
+}

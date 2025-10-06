@@ -10,7 +10,7 @@ interface AuthProps {
 }
 
 const TOKEN_KEY = "api_token";
-export const API_URL = "http://10.0.0.43:4000";
+export const API_URL = "http://10.0.0.41:5000";
 const AuthContext = createContext<AuthProps>({});
 
 export const useAuth = () => {
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: any) => {
   }, []);
 
   const register = async (email: string, password: string) => {
-    const res = await fetch(`${API_URL}/user/register`, {
+    const res = await fetch(`${API_URL}/api/account/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -48,25 +48,19 @@ export const AuthProvider = ({ children }: any) => {
       body: JSON.stringify({ email, password }),
     });
 
-    const data = await res.json();
-    if (data.token) {
-      setAuthState({
-        token: data.token,
-        authenticated: true,
-      });
-
-      await SecureStore.setItemAsync(TOKEN_KEY, data.token.toString());
-
-      return data;
+    if (res.ok) {
+      await login(email, password);
+    } else if (res.status === 401) {
+      alert("Incorrect email or password");
+    } else if (res.status === 400) {
+      alert("Invalid email or password");
     } else {
-      alert(data.message);
+      alert("Something went wrong");
     }
-
-    return data;
   };
 
   const login = async (email: string, password: string) => {
-    const res = await fetch(`${API_URL}/user/login`, {
+    const res = await fetch(`${API_URL}/api/account/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -74,18 +68,21 @@ export const AuthProvider = ({ children }: any) => {
       body: JSON.stringify({ email, password }),
     });
 
-    const data = await res.json();
-    if (data.token) {
+    if (res.ok) {
+      const data = await res.json();
       setAuthState({
         token: data.token,
         authenticated: true,
       });
-
       await SecureStore.setItemAsync(TOKEN_KEY, data.token.toString());
 
       return data;
+    } else if (res.status === 401) {
+      alert("Incorrect email or password");
+    } else if (res.status === 400) {
+      alert("Invalid email or password");
     } else {
-      alert(data.message);
+      alert("Something went wrong");
     }
   };
 
@@ -104,7 +101,7 @@ export const AuthProvider = ({ children }: any) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${authState?.token}`, // Use token from authState
     };
-    const res = await fetch(API_URL + route, params);
+    const res = await fetch(API_URL + "/api" + route, params);
     if (res.status === 401) await logout();
     const data = await res.json();
     return data;

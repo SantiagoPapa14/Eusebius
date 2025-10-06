@@ -9,27 +9,23 @@ import {
 import Carousel from "react-native-reanimated-carousel";
 import Flashcard from "../components/flashcard/Flashcard";
 import { useAuth } from "../context/AuthContext";
-
-type TableData = {
-  word: string;
-  definition: string;
-};
+import { Word } from "../constants/EusebiusTypes";
 
 const FlashcardScreen = () => {
   const { secureFetch } = useAuth();
   if (!secureFetch) return null;
   const width = Dimensions.get("window").width;
-  const [data, setData] = useState<TableData[]>([]); // state to hold the fetched data
-  const [loading, setLoading] = useState<boolean>(true); // loading state
-  const [error, setError] = useState<string | null>(null); // error state
+  const [data, setData] = useState<Word[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Create an async function to fetch the data
     const fetchData = async () => {
       try {
-        const result = (await secureFetch(`/words`)) as TableData[];
+        const result = await secureFetch(`/word/all`);
         const mixedData = result.sort(() => Math.random() - 0.5);
-        setData(mixedData as TableData[]);
+        setData(mixedData);
       } catch (error: any) {
         setError(error.message);
       } finally {
@@ -37,7 +33,7 @@ const FlashcardScreen = () => {
       }
     };
 
-    fetchData(); // Call the async function
+    fetchData();
   }, []);
 
   if (loading) {
@@ -71,8 +67,9 @@ const FlashcardScreen = () => {
         >
           <View className="mb-20">
             <Text className="text-center text-gray-500 text-lg mt-5 m-5">
-              You can click any words within readings to read the definition and
-              save it, then come back to review them here!
+              Puedes clickear cualquier palabra dentro de las lecturas para ver
+              su significado, luego puedes agregarla a tu vocabulario y
+              repasarla aquí!
             </Text>
           </View>
         </View>
@@ -101,7 +98,7 @@ const FlashcardScreen = () => {
             // scrollAnimationDuration={500}
             renderItem={({ item }) => (
               <View className="p-6 mb-20 flex-1 flex justify-center items-center">
-                <Flashcard front={item.word} back={item.definition} />
+                <Flashcard front={item.text} back={item.translation} />
               </View>
             )}
           />

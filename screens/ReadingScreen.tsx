@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
@@ -10,8 +10,10 @@ import {
 import BottomSheet from "@gorhom/bottom-sheet";
 import rawLatinBible from "../constants/latin_bible.json";
 import rawSpanishBible from "../constants/spanish_bible.json";
+import { localBible, DailyMassScripture } from "../constants/EusebiusTypes";
+import { useAuth } from "../context/AuthContext";
+import { useScriptureReader } from "../hooks/scriptureReader";
 
-import { massReadingsType, localBible } from "../constants/EusebiusTypes";
 import ReadingSelector from "../components/reading/ReadingSelector";
 import VerseNavigation from "../components/reading/VerseSelector";
 import CurrentVerse from "../components/reading/CurrentVerse";
@@ -19,21 +21,34 @@ import LatinText from "../components/reading/LatinText";
 import EnglishText from "../components/reading/EnglishText";
 import SkeletonReader from "../components/reading/SkeletonReader";
 import Definition from "../components/reading/Definition";
-import { useAuth } from "../context/AuthContext";
+
+const SWIPE_THRESHOLD = 30;
+
+const ANIMATION_DURATION = 200;
+const SLIDE_DISTANCE = 600;
+
+const ANIMATION_CONFIG = {
+  duration: ANIMATION_DURATION,
+  useNativeDriver: true,
+};
 
 const ReadingScreen = () => {
-  const latinBible: localBible = rawLatinBible as localBible;
-  const spanishBible: localBible = rawSpanishBible as localBible;
-
   const { secureFetch } = useAuth();
-  if (!secureFetch) return null;
-  const [readings, setReadings] = useState<massReadingsType>();
-  const [selectedReading, setSelectedReading] =
-    useState<keyof massReadingsType>("gospel");
-  const [selectedVerse, setSelectedVerse] = useState(1);
-  const [selectedReadingPart, setSelectedReadingPart] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
+  const latinBible = rawLatinBible as localBible;
+  const spanishBible = rawSpanishBible as localBible;
+
+  const {
+    scripture,
+    selectedReading,
+    verseContent,
+    loading,
+    error,
+    canNavigate,
+    navigateVerse,
+    changeReading,
+  } = useScriptureReader({ secureFetch, latinBible, spanishBible } as any);
+
   const [isAnimating, setIsAnimating] = useState(false);
   const [definitionIsOpen, setDefinitionIsOpen] = useState(false);
   const [definitionData, setDefinitionData] = useState(null);
@@ -42,136 +57,76 @@ const ReadingScreen = () => {
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const readingsJson = await secureFetch("/readings/populated");
-        setReadings(readingsJson as massReadingsType);
-      } catch (error: any) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
+  const animateSlide = (direction: "prev" | "next") => {
+    return new Promise<void>((resolve) => {
+      const toValue = direction === "prev" ? SLIDE_DISTANCE : -SLIDE_DISTANCE;
+      setIsAnimating(true);
+
+      Animated.timing(slideAnim, {
+        toValue,
+        ...ANIMATION_CONFIG,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }).start(() => {
+        resolve();
+        slideAnim.setValue(-toValue);
+
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          ...ANIMATION_CONFIG,
+          easing: Easing.out(Easing.ease),
+          useNativeDriver: true,
+        }).start(() => {
+          setIsAnimating(false);
+          resolve();
+        });
+      });
+    });
+  };
+
+  const handleVerseNavigation = async (direction: "prev" | "next") => {
+    await animateSlide(direction);
+    navigateVerse(direction);
+  };
+
+  const panResponder = PanResponder.create({
+    onMoveShouldSetPanResponder: (_, gestureState) =>
+      Math.abs(gestureState.dx) > SWIPE_THRESHOLD,
+    onPanResponderRelease: (_, gestureState) => {
+      if (gestureState.dx > 0 && canNavigate.prev) {
+        handleVerseNavigation("prev");
+      } else if (gestureState.dx < 0 && canNavigate.next) {
+        handleVerseNavigation("next");
       }
-    };
+    },
+  });
 
-    fetchData();
-  }, []);
+  const handleChangeReading = (readingType: keyof DailyMassScripture) => {
+    if (isAnimating) return;
 
-  const latinContent = useMemo(() => {
-    if (!readings) return null;
-    const book = readings![selectedReading]?.book;
-    const chapterIndex =
-      readings![selectedReading]?.verses[selectedReadingPart].chapter;
-    const chapter =
-      latinBible[book!]?.chapters?.[chapterIndex?.toString() || ""];
-    const verse = chapter![selectedVerse.toString() || ""];
-    return verse;
-  }, [readings, selectedReading, selectedReadingPart, selectedVerse]);
+    setIsAnimating(true);
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      ...ANIMATION_CONFIG,
+    }).start(() => {
+      changeReading(readingType);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        ...ANIMATION_CONFIG,
+      }).start(() => setIsAnimating(false));
+    });
+  };
 
-  const spanishContent = useMemo(() => {
-    if (!readings) return null;
-    const book = readings![selectedReading]?.book;
-    const chapterIndex =
-      readings![selectedReading]?.verses[selectedReadingPart].chapter;
-    const chapter =
-      spanishBible[book!]?.chapters?.[chapterIndex?.toString() || ""];
-    const verse = chapter![selectedVerse.toString() || ""];
-    return verse;
-  }, [readings, selectedReading, selectedReadingPart, selectedVerse]);
-
+  if (!secureFetch) return null;
   if (loading) return <SkeletonReader />;
-
-  if (error)
+  if (error) {
     return (
       <View className="flex-1 items-center justify-center">
         <Text className="text-lg text-center">{error}</Text>
       </View>
     );
-
-  const slideToNextVerse = (direction: "prev" | "next") => {
-    if (direction === "next") {
-      if (
-        readings![selectedReading]?.verses[selectedReadingPart].end ===
-        selectedVerse
-      ) {
-        if (
-          selectedReadingPart !==
-          readings![selectedReading]?.verses.length! - 1
-        ) {
-          setSelectedReadingPart(selectedReadingPart + 1);
-          const newStart =
-            readings![selectedReading]?.verses[selectedReadingPart + 1].start ||
-            0;
-          setSelectedVerse(newStart);
-        }
-        return;
-      }
-    }
-
-    if (direction === "prev") {
-      if (
-        readings![selectedReading]?.verses[selectedReadingPart].start ===
-        selectedVerse
-      ) {
-        if (selectedReadingPart !== 0) {
-          setSelectedReadingPart(selectedReadingPart - 1);
-          const newStart =
-            readings![selectedReading]?.verses[selectedReadingPart - 1].end ||
-            0;
-          setSelectedVerse(newStart);
-        }
-        return;
-      }
-    }
-
-    setSelectedVerse((prev) => (direction === "next" ? prev + 1 : prev - 1));
-
-    const toValue = direction === "prev" ? 400 : -400;
-    Animated.timing(slideAnim, {
-      toValue,
-      duration: 300,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start(() => {
-      slideAnim.setValue(-toValue);
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 300,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }).start();
-    });
-  };
-
-  const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gestureState) =>
-      Math.abs(gestureState.dx) > 30,
-    onPanResponderRelease: (_, gestureState) => {
-      if (gestureState.dx > 0) {
-        slideToNextVerse("prev");
-      } else if (gestureState.dx < 0) {
-        slideToNextVerse("next");
-      }
-    },
-  });
-
-  const handleChangeReading = (readingType: keyof massReadingsType) => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => {
-      setSelectedVerse(1);
-      setSelectedReading(readingType);
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => setIsAnimating(false));
-    });
-  };
+  }
+  if (!verseContent || !scripture) return null;
 
   return (
     <View className="flex-1" {...panResponder.panHandlers}>
@@ -181,49 +136,46 @@ const ReadingScreen = () => {
         resizeMode="cover"
         style={{ opacity: 0.1 }}
       />
-      <View
-        className="flex-1 flex justify-center"
-        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
-      >
-        <View className="flex-1 h-screen items-center justify-center bg-gbGray">
+      <View className="absolute inset-0 flex-1 h-full justify-center">
+        <View className="flex-1 items-center justify-center bg-gbGray">
           <LatinText
-            content={latinContent || ""}
+            content={verseContent.latin}
             fadeAnim={fadeAnim}
             slideAnim={slideAnim}
             setDefinitionData={setDefinitionData}
             setDefinitionIsOpen={setDefinitionIsOpen}
           />
+
           <VerseNavigation
-            isFirstVerse={false}
-            isLastVerse={false}
-            onPrevious={() => slideToNextVerse("prev")}
-            onNext={() => slideToNextVerse("next")}
+            isFirstVerse={!canNavigate.prev || isAnimating}
+            isLastVerse={!canNavigate.next || isAnimating}
+            onPrevious={() => handleVerseNavigation("prev")}
+            onNext={() => handleVerseNavigation("next")}
           >
             <CurrentVerse
-              bookName={
-                spanishBible[readings![selectedReading]?.book!]?.title! || ""
-              }
-              chapter={
-                readings![selectedReading]?.verses[selectedReadingPart].chapter!
-              }
-              selectedVerse={selectedVerse}
+              bookName={verseContent.bookName}
+              chapter={verseContent.chapter}
+              selectedVerse={verseContent.verse}
               fadeAnim={fadeAnim}
             />
           </VerseNavigation>
+
           <EnglishText
-            content={spanishContent}
+            content={verseContent.spanish}
             fadeAnim={fadeAnim}
             slideAnim={slideAnim}
           />
         </View>
+
         <ReadingSelector
-          readings={readings!}
+          readings={scripture}
           selectedReading={selectedReading}
           handleChangeReading={handleChangeReading}
         />
       </View>
+
       <Definition
-        definitionData={definitionData}
+        definitionData={definitionData!}
         definitionIsOpen={definitionIsOpen}
         setDefinitionIsOpen={setDefinitionIsOpen}
         selfRef={bottomSheetRef}

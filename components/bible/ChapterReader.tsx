@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
-  Text,
   ImageBackground,
   Animated,
   Easing,
@@ -9,32 +8,43 @@ import {
 } from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 
-import { readingType } from "../../constants/EusebiusTypes";
+import { LocalBook, localBible } from "../../constants/EusebiusTypes";
 import VerseNavigation from "../reading/VerseSelector";
 import CurrentVerse from "../reading/CurrentVerse";
 import LatinText from "../reading/LatinText";
 import EnglishText from "../reading/EnglishText";
-import SkeletonReader from "../reading/SkeletonReader";
 import Definition from "../reading/Definition";
-import { localBookData } from "../../constants/EusebiusTypes";
 import { useAuth } from "../../context/AuthContext";
 
-import latin_bible from "../../constants/latin_bible.json";
-import spanish_bible from "../../constants/spanish_bible.json";
+import rawLatinBible from "../../constants/latin_bible.json";
+import rawSpanishBible from "../../constants/spanish_bible.json";
+
+const ANIMATION_DURATION = 200;
+const SLIDE_DISTANCE = 600;
+
+const ANIMATION_CONFIG = {
+  duration: ANIMATION_DURATION,
+  useNativeDriver: true,
+};
 
 const ChapterReader = ({
   book,
   chapter,
 }: {
-  book: localBookData;
+  book: LocalBook;
   chapter: number;
 }) => {
   const { secureFetch } = useAuth();
   if (!secureFetch) return null;
 
+  const latin_bible = rawLatinBible as localBible;
+  const spanish_bible = rawSpanishBible as localBible;
+
   const [selectedVerse, setSelectedVerse] = useState(1);
   const [definitionIsOpen, setDefinitionIsOpen] = useState(false);
   const [definitionData, setDefinitionData] = useState(null);
+
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const slideAnim = useRef(new Animated.Value(0)).current;
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -42,22 +52,33 @@ const ChapterReader = ({
   const slideToNextVerse = (direction: "prev" | "next") => {
     if (direction === "prev" && isFirstVerse()) return;
     if (direction === "next" && isLastVerse()) return;
-    setSelectedVerse((prev) => (direction === "next" ? prev + 1 : prev - 1));
 
-    const toValue = direction === "prev" ? 400 : -400;
-    Animated.timing(slideAnim, {
-      toValue,
-      duration: 300,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start(() => {
-      slideAnim.setValue(-toValue);
+    return new Promise<void>((resolve) => {
+      const toValue = direction === "prev" ? SLIDE_DISTANCE : -SLIDE_DISTANCE;
+      setIsAnimating(true);
+
       Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 300,
+        toValue,
+        ...ANIMATION_CONFIG,
         easing: Easing.out(Easing.ease),
         useNativeDriver: true,
-      }).start();
+      }).start(() => {
+        resolve();
+        slideAnim.setValue(-toValue);
+        setSelectedVerse(
+          direction === "prev" ? selectedVerse - 1 : selectedVerse + 1,
+        );
+
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          ...ANIMATION_CONFIG,
+          easing: Easing.out(Easing.ease),
+          useNativeDriver: true,
+        }).start(() => {
+          setIsAnimating(false);
+          resolve();
+        });
+      });
     });
   };
 
@@ -101,8 +122,8 @@ const ChapterReader = ({
             setDefinitionIsOpen={setDefinitionIsOpen}
           />
           <VerseNavigation
-            isFirstVerse={isFirstVerse()}
-            isLastVerse={isLastVerse()}
+            isFirstVerse={isFirstVerse() || isAnimating}
+            isLastVerse={isLastVerse() || isAnimating}
             onPrevious={() => slideToNextVerse("prev")}
             onNext={() => slideToNextVerse("next")}
           >
@@ -121,7 +142,7 @@ const ChapterReader = ({
         </View>
       </View>
       <Definition
-        definitionData={definitionData}
+        definitionData={definitionData!}
         definitionIsOpen={definitionIsOpen}
         setDefinitionIsOpen={setDefinitionIsOpen}
         selfRef={bottomSheetRef}

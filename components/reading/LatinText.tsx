@@ -12,7 +12,7 @@ interface LatinTextProps {
 const renderText = (
   content: string,
   setDefinitionData: any,
-  setDefinitionIsOpen: any
+  setDefinitionIsOpen: any,
 ) => {
   return content.split(" ").map((word, index) => (
     <TouchableOpacity
@@ -29,10 +29,10 @@ const renderText = (
 const handleWordPress = async (
   word: string,
   setDefinitionData: any,
-  setDefinitionIsOpen: any
+  setDefinitionIsOpen: any,
 ) => {
   showMessage({
-    message: "Loading definition...",
+    message: "Cargando traducción...",
     type: "info",
   });
 
@@ -41,34 +41,41 @@ const handleWordPress = async (
       .replaceAll(":", "")
       .replaceAll(",", "")
       .replaceAll(".", "")
-      .replaceAll(" ", "")
+      .replaceAll("!", "")
+      .replaceAll("?", "")
+      .replaceAll("«", "")
+      .replace(/[^\p{L}]/gu, "")
+      .trim(),
   );
 
-  const url = `https://anastrophe.uchicago.edu/morpho-api//detail/${cleanWord}?dicos=all`;
+  const url = `https://www.didacterion.com/esddbslt.php?palabra=${cleanWord}`;
   const response = await fetch(url);
-  const data = await response.json();
-  if (
-    data.shortdef[0].split(", ")[0].includes("No short definition found for")
-  ) {
-    data.shortdefParsed = data.shortdef[0]
-      .split(", ")[0]
-      .split("No short definition found for ")[1];
+  const html = await response.text();
 
-    data.translationParsed =
-      "Sorry, no quick translation found. \n Go to full definition for more details.";
-  } else {
-    data.shortdefParsed = data.shortdef[0].split(", ")[0];
-    data.translationParsed = data.shortdef[0].split(", ")[1];
-  }
+  const { full_name, translation } = extractDataFromHtml(html);
+
   setDefinitionData({
-    short_name: data.shortdefParsed,
-    full_name: data.headword,
-    translation: data.translationParsed,
+    short_name: cleanWord,
+    full_name,
+    translation,
   });
-  // await new Promise((r) => setTimeout(r, 500));
   setDefinitionIsOpen(true);
   hideMessage();
 };
+
+function extractDataFromHtml(html: string) {
+  const full_name = html.match(
+    /<input[^>]*id=['"]forpal1['"][^>]*value=['"]([^'"]*)/,
+  );
+  const translation = html.match(
+    /<input[^>]*id=['"]sigpal1['"][^>]*value=['"]([^'"]*)/,
+  );
+
+  return {
+    full_name: full_name ? full_name[1] : "",
+    translation: translation ? translation[1] : "",
+  };
+}
 
 function replaceSpecialChars(str: string) {
   const specialChars = {
@@ -93,7 +100,7 @@ function replaceSpecialChars(str: string) {
 
   return str.replace(
     /æ|Æ|ø|Ø|å|Å|œ|Œ|þ|Þ|ð|Ð|ü|Ü|ö|Ö|ß/g,
-    (match) => specialChars[match as keyof typeof specialChars]
+    (match) => specialChars[match as keyof typeof specialChars],
   );
 }
 

@@ -46,14 +46,14 @@ const LoginScreen = () => {
         <View className="border border-gray-300 bg-white shadow-lg rounded-lg w-2/3 mt-5">
           <TextInput
             className="p-2"
-            placeholder="Email"
+            placeholder="Correo"
             onChangeText={setEmail}
           />
         </View>
         <View className="border border-gray-300 bg-white shadow-lg rounded-lg w-2/3 mt-5">
           <TextInput
             className="p-2"
-            placeholder="Password"
+            placeholder="Contraseña"
             secureTextEntry={true}
             onChangeText={setPassword}
           />
@@ -63,13 +63,13 @@ const LoginScreen = () => {
             className="bg-gray-400 rounded-lg p-4 m-2"
             onPress={login}
           >
-            <Text className="text-white">Login</Text>
+            <Text className="text-white">Iniciar Sesión</Text>
           </TouchableOpacity>
           <TouchableOpacity
             className="bg-gray-400 rounded-lg p-4 m-2"
             onPress={register}
           >
-            <Text className="text-white">Register</Text>
+            <Text className="text-white">Registrarse</Text>
           </TouchableOpacity>
         </View>
       </View>

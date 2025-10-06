@@ -5,29 +5,72 @@ import {
   TouchableOpacity,
   Linking,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
-import React, { FC } from "react";
+import React, { useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/Feather";
 import { showMessage } from "react-native-flash-message";
 import { useAuth } from "../../context/AuthContext";
 
-interface Props {
-  definitionData: any;
-  definitionIsOpen: boolean;
-  setDefinitionIsOpen: any;
-  selfRef: any;
+interface DefinitionData {
+  short_name: string;
+  full_name: string;
+  translation: string;
 }
 
-const Definition: React.FC<Props> = ({
+interface DefinitionProps {
+  definitionData: DefinitionData;
+  definitionIsOpen: boolean;
+  setDefinitionIsOpen: (isOpen: boolean) => void;
+  selfRef: React.RefObject<BottomSheet>;
+}
+
+const Definition: React.FC<DefinitionProps> = ({
   definitionData,
   definitionIsOpen,
   setDefinitionIsOpen,
   selfRef,
 }) => {
-  if (!definitionIsOpen) return null;
   const { secureFetch } = useAuth();
-  if (!secureFetch) return null;
+  const [isSaving, setIsSaving] = useState(false);
+
+  if (!definitionIsOpen || !secureFetch || !definitionData) return null;
+
+  const handleSaveWord = async () => {
+    if (isSaving) return;
+
+    setIsSaving(true);
+    try {
+      const response = await secureFetch(`/word`, {
+        method: "POST",
+        body: JSON.stringify({
+          Text: definitionData.short_name,
+          Translation: definitionData.translation,
+        }),
+      });
+
+      const messageType = response.errors ? "warning" : "info";
+      const messageText = response.errors
+        ? response.errors.Text[0]
+        : "Palabra guardada";
+
+      showMessage({ message: messageText, type: messageType });
+      setDefinitionIsOpen(false);
+    } catch (error) {
+      showMessage({
+        message: "Error al guardar la palabra",
+        type: "danger",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleOpenFullDefinition = () => {
+    Linking.openURL(`https://es.glosbe.com/la/es/${definitionData.short_name}`);
+  };
+
   return (
     <GestureHandlerRootView style={styles.container}>
       <BottomSheet
@@ -37,60 +80,55 @@ const Definition: React.FC<Props> = ({
         enablePanDownToClose
       >
         <BottomSheetView style={styles.contentContainer}>
-          <View className="flex-1 flex items-center">
-            {/* Definition */}
-            <Text className="text-3xl font-bold">
-              {definitionData.short_name}
+          <View style={styles.content}>
+            {/* Word Header */}
+            <Text style={styles.shortName}>{definitionData.short_name}</Text>
+            <Text style={styles.fullName}>
+              {definitionData.translation === ""
+                ? "Sin traducción"
+                : definitionData.full_name.replaceAll(",", ", ")}
             </Text>
-            <Text className="text-lg">{definitionData.full_name}</Text>
-            <Text className="text-xl mt-10 text-center">
-              {definitionData.translation}
+            <Text style={styles.translation}>
+              {definitionData.translation === ""
+                ? "Haz click en 'Ver definición completa'"
+                : definitionData.translation}
             </Text>
-            {/* Divider */}
-            <View className="w-full h-px bg-gray-300 mt-10" />
-            {/* Save word */}
-            <Text className="text-xl font-bold mt-5">
-              Done studying this word?
-            </Text>
-            <TouchableOpacity
-              onPress={async () => {
-                const response = await secureFetch(
-                  "/words/" + definitionData.short_name,
-                  {
-                    method: "POST",
-                    body: JSON.stringify({
-                      definition: definitionData.translation,
-                    }),
-                  }
-                );
-                if (!response.message)
-                  showMessage({ message: "Word saved", type: "info" });
-                else
-                  showMessage({ message: "Already known!", type: "warning" });
-                setDefinitionIsOpen(false);
-              }}
-              className="flex flex-row items-center justify-center space-x-2 w-3/4 h-10 bg-gray-200 rounded-full shadow-lg  mt-10"
-            >
-              <Icon name={"archive"} size={20} color={"black"} />
-              <Text className="text-lg ml-2">Add to your vocabulary</Text>
-            </TouchableOpacity>
-            {/* Divider */}
-            <View className="w-full h-px bg-gray-300 mt-10" />
 
-            {/* Go to definition page */}
-            <Text className="text-xl font-bold mt-5">
-              Not making much sense?
+            {/* Divider */}
+            <View style={styles.divider} />
+
+            {/* Save Word Section */}
+            <Text style={styles.sectionTitle}>
+              ¿Ya estudiaste el significado?
             </Text>
             <TouchableOpacity
-              onPress={() =>
-                Linking.openURL(
-                  `https://logeion.uchicago.edu/${definitionData.short_name}`
-                )
-              }
-              className="flex flex-row items-center justify-center w-2/3 h-10 bg-gray-200 rounded-full shadow-lg  mt-10"
+              onPress={handleSaveWord}
+              disabled={isSaving}
+              style={[styles.button, styles.saveButton]}
+              activeOpacity={0.7}
             >
-              <Icon name={"search"} size={20} color={"black"} />
-              <Text className="text-lg ml-2">Full definition</Text>
+              {isSaving ? (
+                <ActivityIndicator size="small" color="black" />
+              ) : (
+                <>
+                  <Icon name="archive" size={20} color="black" />
+                  <Text style={styles.buttonText}>Agregar a vocabulario</Text>
+                </>
+              )}
+            </TouchableOpacity>
+
+            {/* Divider */}
+            <View style={styles.divider} />
+
+            {/* Full Definition Section */}
+            <Text style={styles.sectionTitle}>¿No tiene mucho sentido?</Text>
+            <TouchableOpacity
+              onPress={handleOpenFullDefinition}
+              style={[styles.button, styles.definitionButton]}
+              activeOpacity={0.7}
+            >
+              <Icon name="search" size={20} color="black" />
+              <Text style={styles.buttonText}>Ver definición completa</Text>
             </TouchableOpacity>
           </View>
         </BottomSheetView>
@@ -112,18 +150,53 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 36,
   },
-  centered: {
+  content: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#f0f0f0", // Adjust background color as needed
   },
-  absoluteContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+  shortName: {
+    fontSize: 30,
+    fontWeight: "bold",
+  },
+  fullName: {
+    fontSize: 18,
+    marginTop: 4,
+  },
+  translation: {
+    fontSize: 20,
+    marginTop: 40,
+    textAlign: "center",
+  },
+  divider: {
+    width: "100%",
+    height: 1,
+    backgroundColor: "#d1d5db",
+    marginTop: 40,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginTop: 20,
+  },
+  button: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 40,
+    backgroundColor: "#e5e7eb",
+    borderRadius: 20,
+    marginTop: 40,
+    paddingHorizontal: 20,
+  },
+  saveButton: {
+    width: "75%",
+  },
+  definitionButton: {
+    width: "66%",
+  },
+  buttonText: {
+    fontSize: 18,
+    marginLeft: 8,
   },
 });
 

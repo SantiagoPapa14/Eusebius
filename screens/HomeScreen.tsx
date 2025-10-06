@@ -2,6 +2,7 @@ import React from "react";
 import { View, ImageBackground, Image } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import NavButton from "../components/home/NavButton";
+import { showMessage } from "react-native-flash-message";
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { onLogout } = useAuth();
@@ -31,7 +32,13 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           />
           <NavButton
             text="Profesor"
-            onPress={() => navigation.navigate("Profesor")}
+            disabled
+            onPress={() =>
+              showMessage({
+                type: "info",
+                message: "Estoy trabajando en ello!",
+              })
+            }
             icon="user"
           />
           <NavButton
@@ -51,7 +58,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           />
           <NavButton
             text="Cerrar Sesion"
-            onPress={() => onLogout}
+            onPress={() => onLogout!()}
             icon="log-out"
           />
         </View>
