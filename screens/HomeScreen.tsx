@@ -33,7 +33,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             onPress={() =>
               showMessage({
                 type: "info",
-                message: "Estoy trabajando en ello!",
+                message: "Esta funcionalidad no esta disponible por el momento",
               })
             }
             icon="user"

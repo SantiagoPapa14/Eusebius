@@ -117,7 +117,9 @@ const LatinText: React.FC<LatinTextProps> = ({
       ]}
     >
       <Text style={styles.text}>
-        {renderText(content, setDefinitionData, setDefinitionIsOpen)}
+        {content !== ""
+          ? renderText(content, setDefinitionData, setDefinitionIsOpen)
+          : "Todavía no hemos descargado esta parte."}
       </Text>
     </Animated.View>
   );

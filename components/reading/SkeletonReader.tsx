@@ -34,7 +34,7 @@ const SkeletonReader = ({
               <Icon name="arrow-back" size={30} color="gray" />
             </TouchableOpacity>
             <View style={styles.verseTextContainer}>
-              <Text style={styles.verseText}>Loading...</Text>
+              <Text style={styles.verseText}>Cargando...</Text>
             </View>
             <TouchableOpacity style={styles.navButton} disabled>
               <Icon name="arrow-forward" size={30} color="gray" />
@@ -49,13 +49,13 @@ const SkeletonReader = ({
           {hideReadingSelector ? null : (
             <View style={styles.readingSelectorContainer}>
               <TouchableOpacity style={styles.readingButton} disabled>
-                <Text>Psalm</Text>
+                <Text>Salmo</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.readingButton} disabled>
-                <Text style={styles.boldText}>Gospel</Text>
+                <Text style={styles.boldText}>Evangelio</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.readingButton} disabled>
-                <Text>Reading</Text>
+                <Text>Lectura</Text>
               </TouchableOpacity>
             </View>
           )}

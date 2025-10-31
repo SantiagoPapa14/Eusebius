@@ -147,101 +147,102 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require("../assets/MichaelWpp.jpg")}
-        style={[styles.background, { opacity: 0.05 }]}
-        resizeMode="cover"
-      />
-      <View style={styles.overlay}>
-        <View style={styles.content}>
-          {/* Table Header */}
-          <View style={styles.tableHeader}>
-            <Text style={styles.headerText}>Palabra</Text>
-            <Text style={styles.headerText}>Significado</Text>
-          </View>
+    <>
+      <View style={styles.container}>
+        <ImageBackground
+          source={require("../assets/MichaelWpp.jpg")}
+          style={[styles.background, { opacity: 0.05 }]}
+          resizeMode="cover"
+        />
+        <View style={styles.overlay}>
+          <View style={styles.content}>
+            {/* Table Header */}
+            <View style={styles.tableHeader}>
+              <Text style={styles.headerText}>Palabra</Text>
+              <Text style={styles.headerText}>Significado</Text>
+            </View>
 
-          {data.length === 0 && (
-            <Text style={styles.emptyMessage}>
-              Puedes clickear cualquier palabra dentro de las lecturas para ver
-              su significado, luego puedes agregarla a tu vocabulario y se
-              guardará aquí!
-            </Text>
-          )}
+            {data.length === 0 && (
+              <Text style={styles.emptyMessage}>
+                Puedes clickear cualquier palabra dentro de las lecturas para
+                ver su significado, luego puedes agregarla a tu vocabulario y se
+                guardará aquí!
+              </Text>
+            )}
 
-          <FlatList
-            style={styles.list}
-            data={data}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id.toString()}
-          />
+            <FlatList
+              style={styles.list}
+              data={data}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id.toString()}
+            />
 
-          <View style={styles.fabContainer}>
-            <TouchableOpacity
-              onPress={() => {
-                setModalVisible(true);
+            <Modal
+              animationType="fade"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                setModalVisible(false);
+                setSelectedWordId(-1);
                 setModalWord("");
                 setModalDefinition("");
-                setSelectedWordId(-1);
               }}
-              style={styles.fab}
             >
-              <Icon name={"plus"} size={18} color={"#000"} />
-            </TouchableOpacity>
-          </View>
-
-          <Modal
-            animationType="fade"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-              setModalVisible(false);
-              setSelectedWordId(-1);
-              setModalWord("");
-              setModalDefinition("");
-            }}
-          >
-            <View style={styles.modalOverlay}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalLabel}>Palabra:</Text>
-                <TextInput
-                  placeholder="Palabra"
-                  value={modalWord}
-                  onChangeText={(text) => setModalWord(text)}
-                  style={styles.modalInput}
-                />
-                <Text style={styles.modalLabel}>Significado:</Text>
-                <TextInput
-                  placeholder="Significado"
-                  value={modalDefinition}
-                  onChangeText={(text) => setModalDefinition(text)}
-                  style={styles.modalInput}
-                />
-                <View style={styles.modalButtonRow}>
-                  <TouchableOpacity
-                    style={styles.modalSaveButton}
-                    onPress={() => handleWordSave()}
-                  >
-                    <Text style={styles.modalButtonText}>Guardar</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.modalCloseButton}
-                    onPress={() => {
-                      setModalVisible(false);
-                      setSelectedWordId(-1);
-                      setModalWord("");
-                      setModalDefinition("");
-                    }}
-                  >
-                    <Text style={styles.modalButtonText}>Cerrar</Text>
-                  </TouchableOpacity>
+              <View style={styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalLabel}>Palabra:</Text>
+                  <TextInput
+                    placeholder="Palabra"
+                    value={modalWord}
+                    onChangeText={(text) => setModalWord(text)}
+                    style={styles.modalInput}
+                  />
+                  <Text style={styles.modalLabel}>Significado:</Text>
+                  <TextInput
+                    placeholder="Significado"
+                    value={modalDefinition}
+                    onChangeText={(text) => setModalDefinition(text)}
+                    style={styles.modalInput}
+                  />
+                  <View style={styles.modalButtonRow}>
+                    <TouchableOpacity
+                      style={styles.modalSaveButton}
+                      onPress={() => handleWordSave()}
+                    >
+                      <Text style={styles.modalButtonText}>Guardar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.modalCloseButton}
+                      onPress={() => {
+                        setModalVisible(false);
+                        setSelectedWordId(-1);
+                        setModalWord("");
+                        setModalDefinition("");
+                      }}
+                    >
+                      <Text style={styles.modalButtonText}>Cerrar</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
-            </View>
-          </Modal>
+            </Modal>
+          </View>
         </View>
       </View>
-    </View>
+      <View style={styles.fabContainer}>
+        <TouchableOpacity
+          onPress={() => {
+            setModalVisible(true);
+            setModalWord("");
+            setModalDefinition("");
+            setSelectedWordId(-1);
+          }}
+          style={styles.fab}
+        >
+          <Icon name={"plus"} size={18} color={"#000"} />
+        </TouchableOpacity>
+      </View>
+    </>
   );
 };
 
@@ -346,12 +347,10 @@ const styles = StyleSheet.create({
   },
   fabContainer: {
     position: "absolute",
-    width: "100%",
-    height: "100%",
-    top: "390%",
+    top: "90%",
     right: 0,
-    alignItems: "flex-end",
-    justifyContent: "flex-end",
+    alignItems: "center",
+    justifyContent: "center",
   },
   fab: {
     marginBottom: 128,

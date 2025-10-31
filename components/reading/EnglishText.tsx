@@ -22,7 +22,9 @@ const EnglishText: React.FC<EnglishTextProps> = ({
         },
       ]}
     >
-      <Text style={styles.text}>{content}</Text>
+      <Text style={styles.text}>
+        {content !== "" ? content : "Todavía no hemos descargado esta parte."}
+      </Text>
     </Animated.View>
   );
 };
