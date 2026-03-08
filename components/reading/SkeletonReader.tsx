@@ -106,8 +106,8 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
     backgroundColor: "#ffffff",
     height: 80,
-    minWidth: 400,
-    maxWidth: "60%",
+    minWidth: 300,
+    maxWidth: "80%",
   },
   navButton: {
     marginHorizontal: 8,

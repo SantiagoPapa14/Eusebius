@@ -4,10 +4,8 @@ import {
   TouchableOpacity,
   Animated,
   StyleSheet,
-  Dimensions,
+  Platform,
 } from "react-native";
-
-const { width, height } = Dimensions.get("window");
 
 const Flashcard = ({ front, back }: { front: string; back: string }) => {
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -17,13 +15,13 @@ const Flashcard = ({ front, back }: { front: string; back: string }) => {
     Animated.timing(fadeAnim, {
       toValue: 0,
       duration: 150,
-      useNativeDriver: true,
+      useNativeDriver: Platform.OS !== "web",
     }).start(() => {
       setIsFlipped(!isFlipped);
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 150,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== "web",
       }).start();
     });
   };
@@ -49,8 +47,8 @@ const Flashcard = ({ front, back }: { front: string; back: string }) => {
 
 const styles = StyleSheet.create({
   card: {
-    width: width * 0.6,
-    height: height * 0.5,
+    width: "100%",
+    height: "100%",
     padding: 20,
     backgroundColor: "white",
     borderRadius: 12,
@@ -69,7 +67,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   backText: {
-    fontSize: 20, // text-2xl
+    fontSize: 20,
     fontStyle: "italic",
     textAlign: "center",
   },

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   ImageBackground,
@@ -7,17 +7,47 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   TextInput,
-  Modal,
   StyleSheet,
+  Platform,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { useAuth } from "../context/AuthContext";
 import { Word } from "../constants/EusebiusTypes";
 import { showMessage } from "react-native-flash-message";
 
+// On web, we render the modal as a plain fixed-position div to avoid
+// the viewport-resize issue triggered by RN's Modal + virtual keyboard.
+const WebModal: React.FC<{
+  visible: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+}> = ({ visible, onClose, children }) => {
+  if (!visible) return null;
+  return (
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      style={{
+        position: "fixed",
+        inset: 0,
+        backgroundColor: "rgba(0,0,0,0.5)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 9999,
+        // This is the key: fixed positioning is unaffected by the virtual keyboard
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
 const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { secureFetch } = useAuth();
   if (!secureFetch) return null;
+
   const [data, setData] = useState<Word[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,6 +55,23 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [modalWord, setModalWord] = useState("");
   const [modalDefinition, setModalDefinition] = useState("");
   const [selectedWordId, setSelectedWordId] = useState(-1);
+
+  // Lock the body so the keyboard never shifts the page layout
+  useEffect(() => {
+    if (Platform.OS === "web" && typeof document !== "undefined") {
+      const originalHeight = `${window.innerHeight}px`;
+      document.documentElement.style.setProperty(
+        "--app-height",
+        originalHeight,
+      );
+      document.body.style.position = "fixed";
+      document.body.style.overflow = "hidden";
+      document.body.style.width = "100%";
+      document.body.style.height = originalHeight;
+      document.documentElement.style.overflow = "hidden";
+      document.documentElement.style.height = originalHeight;
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,33 +84,43 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedWordId(-1);
+    setModalWord("");
+    setModalDefinition("");
+  };
+
+  const openEditModal = (item: Word) => {
+    setModalWord(item.text);
+    setModalDefinition(item.translation);
+    setSelectedWordId(item.id);
+    setModalVisible(true);
+  };
+
+  const openNewModal = () => {
+    setModalWord("");
+    setModalDefinition("");
+    setSelectedWordId(-1);
+    setModalVisible(true);
+  };
 
   const renderItem = ({ item }: { item: Word }) => (
     <View style={styles.itemRow}>
       <TouchableOpacity
-        onPress={() => {
-          setModalWord(item.text);
-          setModalDefinition(item.translation);
-          setSelectedWordId(item.id);
-          setModalVisible(true);
-        }}
-        style={styles.itemButton}
+        onPress={() => openEditModal(item)}
+        style={[styles.itemButton, { height: "100%" }]}
       >
         <Text style={styles.itemText}>
           {item.text.charAt(0).toUpperCase() + item.text.slice(1)}
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => {
-          setModalWord(item.text);
-          setModalDefinition(item.translation);
-          setSelectedWordId(item.id);
-          setModalVisible(true);
-        }}
-        style={styles.itemButton}
+        onPress={() => openEditModal(item)}
+        style={[styles.itemButton, { height: "100%" }]}
       >
         <Text style={styles.itemText}>{item.translation}</Text>
       </TouchableOpacity>
@@ -71,10 +128,50 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         style={styles.deleteButton}
         onPress={() => handleWordDelete(item)}
       >
-        <Icon name={"trash-2"} size={18} color={"red"} />
+        <Icon name="trash-2" size={18} color="red" />
       </TouchableOpacity>
     </View>
   );
+
+  const handleWordSave = async () => {
+    const method = selectedWordId === -1 ? "POST" : "PUT";
+    const res = await secureFetch(`/word`, {
+      method,
+      body: JSON.stringify({
+        id: selectedWordId === -1 ? undefined : selectedWordId,
+        text: modalWord,
+        translation: modalDefinition,
+      }),
+    });
+
+    if (method === "POST") {
+      setData([
+        ...data,
+        { id: res.id, text: res.text, translation: res.translation },
+      ]);
+      showMessage({ message: "Palabra guardada", type: "info" });
+    } else {
+      setData(
+        data.map((w) =>
+          w.id === selectedWordId
+            ? { ...w, text: modalWord, translation: modalDefinition }
+            : w,
+        ),
+      );
+      showMessage({ message: "Palabra actualizada", type: "info" });
+    }
+    closeModal();
+  };
+
+  const handleWordDelete = async (word: Word) => {
+    await secureFetch(`/word`, {
+      method: "DELETE",
+      body: JSON.stringify(word),
+    });
+    setData(data.filter((w) => w.id !== word.id));
+    showMessage({ message: "Palabra eliminada", type: "danger" });
+    closeModal();
+  };
 
   if (loading) {
     return (
@@ -92,59 +189,38 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     );
   }
 
-  const handleWordSave = async () => {
-    const method = selectedWordId === -1 ? "POST" : "PUT";
-
-    const res = await secureFetch(`/word`, {
-      method,
-      body: JSON.stringify({
-        id: selectedWordId === -1 ? undefined : selectedWordId,
-        text: modalWord,
-        translation: modalDefinition,
-      }),
-    });
-
-    if (method === "POST") {
-      setData([
-        ...data,
-        {
-          id: res.id,
-          text: res.text,
-          translation: res.translation,
-        },
-      ]);
-      showMessage({
-        message: "Palabra guardada",
-        type: "info",
-      });
-    } else if (method === "PUT") {
-      const newData = data.map((word) => {
-        if (word.id === selectedWordId) {
-          return { ...word, text: modalWord, translation: modalDefinition };
-        }
-        return word;
-      });
-      setData(newData);
-      showMessage({
-        message: "Palabra actualizada",
-        type: "info",
-      });
-    }
-    setModalVisible(false);
-  };
-
-  const handleWordDelete = async (word: Word) => {
-    await secureFetch(`/word`, {
-      method: "DELETE",
-      body: JSON.stringify(word),
-    });
-    setData(data.filter((w) => w.id !== word.id));
-    showMessage({
-      message: "Palabra eliminada",
-      type: "danger",
-    });
-    setModalVisible(false);
-  };
+  // Modal content shared between web and native
+  const modalContent = (
+    <View style={styles.modalContent}>
+      <Text style={styles.modalLabel}>Palabra:</Text>
+      <TextInput
+        placeholder="Palabra"
+        value={modalWord}
+        onChangeText={setModalWord}
+        style={styles.modalInput}
+      />
+      <Text style={styles.modalLabel}>Significado:</Text>
+      <TextInput
+        placeholder="Significado"
+        value={modalDefinition}
+        onChangeText={setModalDefinition}
+        style={styles.modalInput}
+        multiline
+        numberOfLines={3}
+      />
+      <View style={styles.modalButtonRow}>
+        <TouchableOpacity
+          style={styles.modalSaveButton}
+          onPress={handleWordSave}
+        >
+          <Text style={styles.modalButtonText}>Guardar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.modalCloseButton} onPress={closeModal}>
+          <Text style={styles.modalButtonText}>Cerrar</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
   return (
     <>
@@ -159,7 +235,6 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         />
         <View style={styles.overlay}>
           <View style={styles.content}>
-            {/* Table Header */}
             <View style={styles.tableHeader}>
               <Text style={styles.headerText}>Palabra</Text>
               <Text style={styles.headerText}>Significado</Text>
@@ -179,72 +254,28 @@ const VocabularyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               renderItem={renderItem}
               keyExtractor={(item) => item.id.toString()}
             />
-
-            <Modal
-              animationType="fade"
-              transparent={true}
-              visible={modalVisible}
-              onRequestClose={() => {
-                setModalVisible(false);
-                setSelectedWordId(-1);
-                setModalWord("");
-                setModalDefinition("");
-              }}
-            >
-              <View style={styles.modalOverlay}>
-                <View style={styles.modalContent}>
-                  <Text style={styles.modalLabel}>Palabra:</Text>
-                  <TextInput
-                    placeholder="Palabra"
-                    value={modalWord}
-                    onChangeText={(text) => setModalWord(text)}
-                    style={styles.modalInput}
-                  />
-                  <Text style={styles.modalLabel}>Significado:</Text>
-                  <TextInput
-                    placeholder="Significado"
-                    value={modalDefinition}
-                    onChangeText={(text) => setModalDefinition(text)}
-                    style={styles.modalInput}
-                  />
-                  <View style={styles.modalButtonRow}>
-                    <TouchableOpacity
-                      style={styles.modalSaveButton}
-                      onPress={() => handleWordSave()}
-                    >
-                      <Text style={styles.modalButtonText}>Guardar</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.modalCloseButton}
-                      onPress={() => {
-                        setModalVisible(false);
-                        setSelectedWordId(-1);
-                        setModalWord("");
-                        setModalDefinition("");
-                      }}
-                    >
-                      <Text style={styles.modalButtonText}>Cerrar</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            </Modal>
           </View>
         </View>
       </View>
+
+      {/* FAB */}
       <View style={styles.fabContainer}>
-        <TouchableOpacity
-          onPress={() => {
-            setModalVisible(true);
-            setModalWord("");
-            setModalDefinition("");
-            setSelectedWordId(-1);
-          }}
-          style={styles.fab}
-        >
-          <Icon name={"plus"} size={18} color={"#000"} />
+        <TouchableOpacity onPress={openNewModal} style={styles.fab}>
+          <Icon name="plus" size={18} color="#000" />
         </TouchableOpacity>
       </View>
+
+      {/* Modal — use native div on web to avoid keyboard-resize bug */}
+      {Platform.OS === "web" ? (
+        <WebModal visible={modalVisible} onClose={closeModal}>
+          {modalContent}
+        </WebModal>
+      ) : (
+        // Native fallback (iOS/Android)
+        modalVisible && (
+          <View style={styles.nativeModalOverlay}>{modalContent}</View>
+        )
+      )}
     </>
   );
 };
@@ -262,11 +293,10 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    width: "100%",
-    height: "100%",
   },
   content: {
     padding: 16,
+    flex: 1,
   },
   centerContainer: {
     flex: 1,
@@ -313,21 +343,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,
     borderColor: "#e5e7eb",
     flex: 1,
-    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   itemText: {
-    flex: 1,
     textAlign: "center",
     fontSize: 18,
+    paddingHorizontal: 4,
   },
   deleteButton: {
     width: 40,
@@ -337,10 +365,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,
@@ -350,14 +375,10 @@ const styles = StyleSheet.create({
   },
   fabContainer: {
     position: "absolute",
-    top: "90%",
-    right: 0,
-    alignItems: "center",
-    justifyContent: "center",
+    bottom: 48,
+    right: 32,
   },
   fab: {
-    marginBottom: 128,
-    marginRight: 32,
     width: 64,
     height: 64,
     justifyContent: "center",
@@ -367,23 +388,28 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     borderWidth: 1,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,
     borderColor: "#e5e7eb",
   },
-  modalOverlay: {
-    flex: 1,
+  // Native-only modal overlay (fallback)
+  nativeModalOverlay: {
+    position: "absolute",
+    inset: 0,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    zIndex: 9999,
   },
   modalContent: {
     width: "80%",
+    maxWidth: 480,
     backgroundColor: "#ffffff",
     borderRadius: 8,
     padding: 24,
@@ -391,7 +417,7 @@ const styles = StyleSheet.create({
   modalLabel: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 16,
+    marginBottom: 8,
   },
   modalInput: {
     borderWidth: 1,
@@ -399,6 +425,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 8,
     marginBottom: 16,
+    fontSize: 16,
   },
   modalButtonRow: {
     flexDirection: "row",

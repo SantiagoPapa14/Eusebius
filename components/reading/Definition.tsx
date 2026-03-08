@@ -197,6 +197,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     marginLeft: 8,
+    textAlign: "center",
   },
 });
 

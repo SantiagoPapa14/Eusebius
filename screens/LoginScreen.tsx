@@ -40,7 +40,7 @@ const LoginScreen = () => {
           <Image
             source={require("../assets/LogoHQ.png")}
             style={styles.logo}
-            resizeMode="cover"
+            resizeMode="contain"
           />
         </View>
         <View style={styles.inputContainer}>
