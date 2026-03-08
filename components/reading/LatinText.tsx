@@ -87,7 +87,7 @@ const handleWordPress = async (
       .trim(),
   );
 
-  const url = `http://translate.eusebius.santiagopapa.com.ar/analyze?word=${cleanLatinWord}`;
+  const url = `https://latindict.santiagopapa.com.ar/analyze?word=${cleanLatinWord}`;
   const response = await fetch(url);
   const { word, lemma, pos, definition } = await response.json();
 
