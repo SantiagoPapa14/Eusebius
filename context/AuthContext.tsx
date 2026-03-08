@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import * as SecureStore from "expo-secure-store";
+import { getItem, setItem, removeItem } from "./Storage";
 
 interface AuthProps {
   authState?: { token: string | null; authenticated: boolean | null };
@@ -10,7 +10,7 @@ interface AuthProps {
 }
 
 const TOKEN_KEY = "api_token";
-export const API_URL = "http://10.0.0.39:5139";
+export const API_URL = "http://10.0.0.47:5139";
 const AuthContext = createContext<AuthProps>({});
 
 export const useAuth = () => {
@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }: any) => {
 
   useEffect(() => {
     const loadToken = async () => {
-      const token = await SecureStore.getItemAsync(TOKEN_KEY);
+      const token = await getItem(TOKEN_KEY);
       if (token) {
         setAuthState({
           token,
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }: any) => {
         token: data.token,
         authenticated: true,
       });
-      await SecureStore.setItemAsync(TOKEN_KEY, data.token.toString());
+      await setItem(TOKEN_KEY, data.token.toString());
 
       return data;
     } else if (res.status === 401) {
@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }: any) => {
   };
 
   const logout = async () => {
-    await SecureStore.deleteItemAsync(TOKEN_KEY);
+    await removeItem(TOKEN_KEY);
     setAuthState({
       token: null,
       authenticated: false,

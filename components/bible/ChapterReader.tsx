@@ -107,7 +107,10 @@ const ChapterReader = ({
     <View style={styles.container} {...panResponder.panHandlers}>
       <ImageBackground
         source={require("../../assets/MichaelWpp.jpg")}
-        style={[styles.background, { opacity: 0.1 }]}
+        style={[
+          styles.background,
+          { opacity: 0.1, width: "100%", height: "100%" },
+        ]}
         resizeMode="cover"
       />
       <View style={styles.overlay}>

@@ -30,7 +30,10 @@ const BookSelector = ({ setBook }: { setBook: Function }) => {
     <View style={styles.container}>
       <ImageBackground
         source={require("../../assets/MichaelWpp.jpg")}
-        style={[styles.background, { opacity: 0.2 }]}
+        style={[
+          styles.background,
+          { opacity: 0.2, width: "100%", height: "100%" },
+        ]}
         resizeMode="cover"
       />
       <View style={styles.overlay}>

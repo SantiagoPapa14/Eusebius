@@ -4844,7 +4844,7 @@
   "2JN": {
     "title": "Epistula II Ioannis",
     "chapters": {
-      "0": {
+      "1": {
         "1": "Presbyter electæ dominæ et filiis eius, quos ego diligo in veritate, et non ego solus, sed et omnes, qui noverunt veritatem,",
         "2": "propter veritatem, quæ permanet in nobis et nobiscum erit in sempiternum.",
         "3": "Erit nobiscum gratia, misericordia, pax a Deo Patre et a Iesu Christo, Filio Patris, in veritate et caritate.",
@@ -12625,7 +12625,7 @@
   "PHM": {
     "title": "Epistula ad Philemonem",
     "chapters": {
-      "0": {
+      "1": {
         "1": "Paulus vinctus Christi Iesu et Timotheus frater Philemoni dilecto et adiutori nostro",
         "2": "et Apphiæ sorori et Archippo commilitoni nostro et ecclesiæ, quæ in domo tua est:",
         "3": "gratia vobis et pax a Deo Patre nostro et Domino Iesu Christo.",
@@ -21206,7 +21206,7 @@
   "JUD": {
     "title": "Epistula Iudæ",
     "chapters": {
-      "0": {
+      "1": {
         "1": "Iudas Iesu Christi servus, frater autem Iacobi, his qui sunt vocati, in Deo Patre dilecti et Christo Iesu conservati:",
         "2": "misericordia vobis et pax et caritas adimpleatur.",
         "3": "Carissimi, omnem sollicitudinem faciens scribendi vobis de communi nostra salute, necesse habui scribere vobis, deprecans certare pro semel tradita sanctis fide.",
@@ -23908,7 +23908,7 @@
   "3JN": {
     "title": "Epistula III Ioannis",
     "chapters": {
-      "0": {
+      "1": {
         "2": "Carissime, in omnibus exopto prospere te agere et valere, sicut prospere agit anima tua.",
         "3": "Nam gavisus sum valde, venientibus fratribus et testimonium perhibentibus veritati tuæ, quomodo tu in veritate ambules.",
         "4": "Maius horum non habeo gaudium, quam ut audiam filios meos in veritate ambulare.",
@@ -30329,35 +30329,35 @@
         "8": "In matutino cessare faciam omnes peccatores terræ, ut disperdam de civitate Domini omnes operantes iniquitatem."
       },
       "102": {
-        "1": "Preces afflicti, qui defessus angorem suum ante Dominum profundit.",
-        "2": "Domine, exaudi orationem meam, et clamor meus ad te veniat.",
-        "3": "Non abscondas faciem tuam a me; in quacumque die tribulor, inclina ad me aurem tuam. In quacumque die invocavero te, velociter exaudi me.",
-        "4": "Quia defecerunt sicut fumus dies mei, et ossa mea sicut cremium aruerunt.",
-        "5": "Percussum est ut fenum et aruit cor meum, etenim oblitus sum comedere panem meum.",
-        "6": "A voce gemitus mei adhæsit os meum carni meæ.",
-        "7": "Similis factus sum pellicano solitudinis, factus sum sicut nycticorax in ruinis.",
-        "8": "Vigilavi et factus sum sicut passer solitarius in tecto.",
-        "9": "Tota die exprobrabant mihi inimici mei, exardescentes in me per me iurabant.",
-        "10": "Quia cinerem tamquam panem manducabam et potum meum cum fletu miscebam,",
-        "11": "a facie iræ et increpationis tuæ, quia elevans allisisti me.",
-        "12": "Dies mei sicut umbra declinaverunt, et ego sicut fenum arui.",
-        "13": "Tu autem, Domine, in æternum permanes, et memoriale tuum in generationem et generationem.",
-        "14": "Tu exsurgens misereberis Sion, quia tempus miserendi eius, quia venit tempus,",
-        "15": "quoniam placuerunt servis tuis lapides eius, et pulveris eius miserentur.",
-        "16": "Et timebunt gentes nomen tuum, Domine, et omnes reges terræ gloriam tuam,",
-        "17": "quia ædificavit Dominus Sion et apparuit in gloria sua.",
-        "18": "Respexit in orationem inopum et non sprevit precem eorum.",
-        "19": "Scribantur hæc pro generatione altera, et populus, qui creabitur, laudabit Dominum.",
-        "20": "Quia prospexit de excelso sanctuario suo, Dominus de cælo in terram aspexit,",
-        "21": "ut audiret gemitus compeditorum, ut solveret filios mortis;",
-        "22": "ut annuntient in Sion nomen Domini et laudem eius in Ierusalem,",
-        "23": "cum congregati fuerint populi in unum et regna, ut serviant Domino.",
-        "24": "Humiliavit in via virtutem meam, abbreviavit dies meos. Dicam: « Deus meus,",
-        "25": "ne auferas me in dimidio dierum meorum; in generationem et generationem sunt anni tui.",
-        "26": "Initio terram fundasti; et opera manuum tuarum sunt cæli.",
-        "27": "Ipsi peribunt, tu autem permanes; et omnes sicut vestimentum veterascent, et sicut opertorium mutabis eos, et mutabuntur.",
-        "28": "Tu autem idem ipse es, et anni tui non deficient.",
-        "29": "Filii servorum tuorum habitabunt, et semen eorum in conspectu tuo firmabitur »."
+        "0": "Preces afflicti, qui defessus angorem suum ante Dominum profundit.",
+        "1": "Domine, exaudi orationem meam, et clamor meus ad te veniat.",
+        "2": "Non abscondas faciem tuam a me; in quacumque die tribulor, inclina ad me aurem tuam. In quacumque die invocavero te, velociter exaudi me.",
+        "3": "Quia defecerunt sicut fumus dies mei, et ossa mea sicut cremium aruerunt.",
+        "4": "Percussum est ut fenum et aruit cor meum, etenim oblitus sum comedere panem meum.",
+        "5": "A voce gemitus mei adhæsit os meum carni meæ.",
+        "6": "Similis factus sum pellicano solitudinis, factus sum sicut nycticorax in ruinis.",
+        "7": "Vigilavi et factus sum sicut passer solitarius in tecto.",
+        "8": "Tota die exprobrabant mihi inimici mei, exardescentes in me per me iurabant.",
+        "9": "Quia cinerem tamquam panem manducabam et potum meum cum fletu miscebam,",
+        "10": "a facie iræ et increpationis tuæ, quia elevans allisisti me.",
+        "11": "Dies mei sicut umbra declinaverunt, et ego sicut fenum arui.",
+        "12": "Tu autem, Domine, in æternum permanes, et memoriale tuum in generationem et generationem.",
+        "13": "Tu exsurgens misereberis Sion, quia tempus miserendi eius, quia venit tempus,",
+        "14": "quoniam placuerunt servis tuis lapides eius, et pulveris eius miserentur.",
+        "15": "Et timebunt gentes nomen tuum, Domine, et omnes reges terræ gloriam tuam,",
+        "16": "quia ædificavit Dominus Sion et apparuit in gloria sua.",
+        "17": "Respexit in orationem inopum et non sprevit precem eorum.",
+        "18": "Scribantur hæc pro generatione altera, et populus, qui creabitur, laudabit Dominum.",
+        "19": "Quia prospexit de excelso sanctuario suo, Dominus de cælo in terram aspexit,",
+        "20": "ut audiret gemitus compeditorum, ut solveret filios mortis;",
+        "21": "ut annuntient in Sion nomen Domini et laudem eius in Ierusalem,",
+        "22": "cum congregati fuerint populi in unum et regna, ut serviant Domino.",
+        "23": "Humiliavit in via virtutem meam, abbreviavit dies meos. Dicam: « Deus meus,",
+        "24": "ne auferas me in dimidio dierum meorum; in generationem et generationem sunt anni tui.",
+        "25": "Initio terram fundasti; et opera manuum tuarum sunt cæli.",
+        "26": "Ipsi peribunt, tu autem permanes; et omnes sicut vestimentum veterascent, et sicut opertorium mutabis eos, et mutabuntur.",
+        "27": "Tu autem idem ipse es, et anni tui non deficient.",
+        "28": "Filii servorum tuorum habitabunt, et semen eorum in conspectu tuo firmabitur »."
       },
       "103": {
         "2": "Benedic, anima mea, Domino et noli oblivisci omnes retributiones eius.",
@@ -32335,7 +32335,7 @@
   "OBA": {
     "title": "Prophetia Abdiæ",
     "chapters": {
-      "0": {
+      "1": {
         "1": "Visio Abdiæ. Hæc dicit Dominus Deus ad Edom. Auditum audivimus a Domino, et legatus ad gentes missus est: « Surgite, et consurgamus adversus eum in prœlium! ».",
         "2": "« Ecce parvulum te dabo in gentibus, contemptibilis tu es valde.",
         "3": "Superbia cordis tui decepit te habitantem in scissuris petræ, exaltantem solium suum; qui dicit in corde suo: “Quis detrahet me in terram?”.",

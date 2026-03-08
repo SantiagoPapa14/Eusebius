@@ -99,7 +99,10 @@ const ProfessorScreen = () => {
     <View style={styles.container}>
       <ImageBackground
         source={require("../assets/MichaelWpp.jpg")}
-        style={[styles.background, { opacity: 0.15 }]}
+        style={[
+          styles.background,
+          { opacity: 0.15, width: "100%", height: "100%" },
+        ]}
         resizeMode="cover"
       />
       <View style={styles.overlay}>

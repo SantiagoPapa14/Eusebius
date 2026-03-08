@@ -13,14 +13,9 @@ const NavButton = ({ text, onPress, icon, disabled = false }: Props) => {
   return (
     <View
       style={{
-        elevation: 5,
-        shadowColor: "#000",
         width: 150,
         height: 150,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 4.5,
-        margin: 15,
+        margin: 10,
       }}
     >
       <TouchableOpacity
@@ -31,6 +26,10 @@ const NavButton = ({ text, onPress, icon, disabled = false }: Props) => {
           justifyContent: "center",
           alignItems: "center",
           elevation: 5,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 4.5,
+          shadowColor: "#000",
           backgroundColor: disabled ? "#D1D5DB" : "#FFF",
           borderRadius: 20,
         }}

@@ -10,7 +10,10 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     <View style={styles.container}>
       <ImageBackground
         source={require("../assets/MichaelWpp.jpg")}
-        style={[styles.background, { opacity: 0.2 }]}
+        style={[
+          styles.background,
+          { opacity: 0.2, height: "100%", width: "100%" },
+        ]}
         resizeMode="cover"
       />
       <View style={styles.overlay}>
@@ -18,7 +21,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           <Image
             source={require("../assets/LogoHQ.png")}
             style={styles.logo}
-            resizeMode="cover"
+            resizeMode="contain"
           />
         </View>
         <View style={styles.navContainer}>
@@ -82,18 +85,20 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     height: "20%",
-    marginTop: 64,
+    marginTop: 32,
   },
   logo: {
     width: "100%",
     height: "100%",
   },
   navContainer: {
-    flex: 1,
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "center",
+    justifyContent: "space-between",
+    marginHorizontal: "5%",
     alignItems: "center",
+    maxWidth: 600,
+    alignSelf: "center",
   },
 });
 

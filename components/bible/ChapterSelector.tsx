@@ -48,7 +48,9 @@ const ChapterSelector = ({
         resizeMode="cover"
       />
       <View style={styles.overlay}>
-        <ScrollView>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent} // ← cambio aquí
+        >
           <Text style={styles.bookTitle}>{book.Book}</Text>
           <ChapterList book={book} setChapter={setChapter} />
           <View style={{ height: 40 }} />
@@ -61,10 +63,16 @@ const ChapterSelector = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
   backgroundImage: {
     flex: 1,
     opacity: 0.2,
+    width: "100%",
+    height: "100%",
   },
   overlay: {
     position: "absolute",
@@ -72,8 +80,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    width: width,
-    height: height,
+  },
+  scrollContent: {
+    alignItems: "center",
+    width: "100%",
+    maxWidth: 900,
+    alignSelf: "center",
   },
   bookTitle: {
     textAlign: "center",
@@ -86,6 +98,9 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "center",
     alignItems: "center",
+    maxWidth: 700,
+    alignSelf: "center",
+    paddingHorizontal: 20,
   },
   chapterButton: {
     width: 64,

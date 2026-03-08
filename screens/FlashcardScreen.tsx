@@ -58,7 +58,10 @@ const FlashcardScreen = () => {
       <View style={styles.container}>
         <ImageBackground
           source={require("../assets/MichaelWpp.jpg")}
-          style={[styles.background, { opacity: 0.05 }]}
+          style={[
+            styles.background,
+            { opacity: 0.05, width: "100%", height: "100%" },
+          ]}
           resizeMode="cover"
         />
         <View style={styles.overlay}>
