@@ -1,6 +1,11 @@
-// Flashcard.tsx
 import React, { useState, useRef } from "react";
-import { View, Text, TouchableOpacity, Animated } from "react-native";
+import {
+  Text,
+  TouchableOpacity,
+  Animated,
+  StyleSheet,
+  Platform,
+} from "react-native";
 
 const Flashcard = ({ front, back }: { front: string; back: string }) => {
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -10,39 +15,28 @@ const Flashcard = ({ front, back }: { front: string; back: string }) => {
     Animated.timing(fadeAnim, {
       toValue: 0,
       duration: 150,
-      useNativeDriver: true,
+      useNativeDriver: Platform.OS !== "web",
     }).start(() => {
       setIsFlipped(!isFlipped);
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 150,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== "web",
       }).start();
     });
   };
 
   return (
     <TouchableOpacity
-      onPress={() => handleFlipCard()}
+      onPress={handleFlipCard}
       activeOpacity={1}
-      className="w-80 h-3/5 p-5 bg-white rounded-lg border border-gray-400 shadow border-gray-200 flex justify-center items-center"
-      style={{
-        elevation: 5,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.5,
-      }}
+      style={styles.card}
     >
-      <Animated.View
-        style={{
-          opacity: fadeAnim,
-        }}
-      >
+      <Animated.View style={{ opacity: fadeAnim }}>
         {isFlipped ? (
-          <Text className="text-2xl italic">{back}</Text>
+          <Text style={styles.backText}>{back}</Text>
         ) : (
-          <Text className="text-3xl">
+          <Text style={styles.frontText}>
             {front.charAt(0).toUpperCase() + front.slice(1)}
           </Text>
         )}
@@ -50,5 +44,33 @@ const Flashcard = ({ front, back }: { front: string; back: string }) => {
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  card: {
+    width: "100%",
+    height: "100%",
+    padding: 20,
+    backgroundColor: "white",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+  },
+  frontText: {
+    fontSize: 24,
+    textAlign: "center",
+  },
+  backText: {
+    fontSize: 20,
+    fontStyle: "italic",
+    textAlign: "center",
+  },
+});
 
 export default Flashcard;

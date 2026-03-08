@@ -1,6 +1,14 @@
-import { Text, Animated, TouchableOpacity } from "react-native";
+import React from "react";
+import {
+  Text,
+  Animated,
+  TouchableOpacity,
+  StyleSheet,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { hideMessage, showMessage } from "react-native-flash-message";
-import React, { FC } from "react";
+
 interface LatinTextProps {
   content: string;
   fadeAnim?: Animated.Value;
@@ -9,76 +17,92 @@ interface LatinTextProps {
   setDefinitionIsOpen: any;
 }
 
-const renderText = (
-  content: string,
-  setDefinitionData: any,
-  setDefinitionIsOpen: any,
-) => {
-  return content.split(" ").map((word, index) => (
-    <TouchableOpacity
-      key={index}
-      onPress={() =>
-        handleWordPress(word, setDefinitionData, setDefinitionIsOpen)
-      }
+const LatinText: React.FC<LatinTextProps> = ({
+  content,
+  fadeAnim,
+  slideAnim,
+  setDefinitionData,
+  setDefinitionIsOpen,
+}) => {
+  const { width } = useWindowDimensions();
+
+  let fontSize = 18;
+  if (width >= 768) fontSize = 22;
+  if (width >= 1200) fontSize = 28;
+
+  const renderText = () => {
+    return content.split(" ").map((word, index) => (
+      <TouchableOpacity
+        key={index}
+        onPress={() =>
+          handleWordPress(word, setDefinitionData, setDefinitionIsOpen)
+        }
+      >
+        <Text style={[styles.word, { fontSize }]}>{word} </Text>
+      </TouchableOpacity>
+    ));
+  };
+
+  return (
+    <Animated.View
+      style={[
+        styles.container,
+        {
+          opacity: fadeAnim ?? 1,
+          transform: [{ translateX: slideAnim }],
+        },
+      ]}
     >
-      <Text className="text-lg">{word} </Text>
-    </TouchableOpacity>
-  ));
+      {content !== "" ? (
+        <View style={styles.textContainer}>{renderText()}</View>
+      ) : (
+        <Text style={[styles.text, { fontSize }]}>
+          Todavía no hemos descargado esta parte.
+        </Text>
+      )}
+    </Animated.View>
+  );
 };
 
 const handleWordPress = async (
-  word: string,
+  latinWord: string,
   setDefinitionData: any,
   setDefinitionIsOpen: any,
 ) => {
   showMessage({
-    message: "Cargando traducción...",
+    message: "Cargando traducción...",
     type: "info",
   });
 
-  const cleanWord = replaceSpecialChars(
-    word
+  const cleanLatinWord = replaceSpecialChars(
+    latinWord
       .replaceAll(":", "")
       .replaceAll(",", "")
       .replaceAll(".", "")
       .replaceAll("!", "")
       .replaceAll("?", "")
       .replaceAll("«", "")
+      .replaceAll("»", "")
       .replace(/[^\p{L}]/gu, "")
       .trim(),
   );
 
-  const url = `https://www.didacterion.com/esddbslt.php?palabra=${cleanWord}`;
+  const url = `http://translate.eusebius.santiagopapa.com.ar/analyze?word=${cleanLatinWord}`;
   const response = await fetch(url);
-  const html = await response.text();
-
-  const { full_name, translation } = extractDataFromHtml(html);
+  const { word, lemma, pos, definition } = await response.json();
 
   setDefinitionData({
-    short_name: cleanWord,
-    full_name,
-    translation,
+    short_name: lemma,
+    full_name: cleanLatinWord,
+    translation: definition,
   });
+
   setDefinitionIsOpen(true);
   hideMessage();
 };
 
-function extractDataFromHtml(html: string) {
-  const full_name = html.match(
-    /<input[^>]*id=['"]forpal1['"][^>]*value=['"]([^'"]*)/,
-  );
-  const translation = html.match(
-    /<input[^>]*id=['"]sigpal1['"][^>]*value=['"]([^'"]*)/,
-  );
-
-  return {
-    full_name: full_name ? full_name[1] : "",
-    translation: translation ? translation[1] : "",
-  };
-}
-
 function replaceSpecialChars(str: string) {
-  const specialChars = {
+  const specialChars: Record<string, string> = {
     æ: "ae",
     Æ: "AE",
     ø: "o",
@@ -100,30 +124,30 @@ function replaceSpecialChars(str: string) {
 
   return str.replace(
     /æ|Æ|ø|Ø|å|Å|œ|Œ|þ|Þ|ð|Ð|ü|Ü|ö|Ö|ß/g,
-    (match) => specialChars[match as keyof typeof specialChars],
+    (match) => specialChars[match],
   );
 }
 
-const LatinText: React.FC<LatinTextProps> = ({
-  content,
-  fadeAnim,
-  slideAnim,
-  setDefinitionData,
-  setDefinitionIsOpen,
-}) => {
-  return (
-    <Animated.View
-      style={{
-        opacity: fadeAnim ?? 1,
-        transform: [{ translateX: slideAnim }],
-      }}
-      className="flex-1 items-center justify-center w-screen pr-5 pl-5"
-    >
-      <Text className="text-lg text-center">
-        {renderText(content, setDefinitionData, setDefinitionIsOpen)}
-      </Text>
-    </Animated.View>
-  );
-};
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    paddingHorizontal: 20,
+  },
+  textContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    maxWidth: 600,
+  },
+  text: {
+    textAlign: "center",
+  },
+  word: {
+    marginRight: 4,
+  },
+});
 
 export default LatinText;

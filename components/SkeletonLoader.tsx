@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { View, Animated } from "react-native";
+import { View, Animated, StyleSheet } from "react-native";
 
 const PulsingView = ({ width }: { width: number }) => {
   const scale = useRef(new Animated.Value(1)).current;
@@ -19,32 +19,44 @@ const PulsingView = ({ width }: { width: number }) => {
         }),
       ]).start(() => pulse());
     };
-
     pulse();
   }, [scale]);
 
   return (
     <Animated.View
-      style={{
-        transform: [{ scale }],
-        height: 16, // Change to match your height (h-4 = 1rem = 16px)
-        backgroundColor: "#D1D5DB", // Change to match your color (bg-gray-300)
-        borderRadius: 9999, // Change to match your rounded class
-        width: width,
-        marginBottom: 8, // Change to match your mb-2
-      }}
+      style={[
+        styles.pulsingView,
+        {
+          transform: [{ scale }],
+          width: width,
+        },
+      ]}
     />
   );
 };
 
 const SkeletonLoader = () => {
   return (
-    <View className="flex-1 flex items-center justify-center">
+    <View style={styles.container}>
       <PulsingView width={128} />
       <PulsingView width={160} />
       <PulsingView width={128} />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  pulsingView: {
+    height: 16,
+    backgroundColor: "#D1D5DB",
+    borderRadius: 9999,
+    marginBottom: 8,
+  },
+});
 
 export default SkeletonLoader;

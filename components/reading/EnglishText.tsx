@@ -1,4 +1,4 @@
-import { Text, Animated } from "react-native";
+import { Text, Animated, StyleSheet, useWindowDimensions } from "react-native";
 import React from "react";
 
 interface EnglishTextProps {
@@ -12,17 +12,41 @@ const EnglishText: React.FC<EnglishTextProps> = ({
   fadeAnim,
   slideAnim,
 }) => {
+  const { width } = useWindowDimensions();
+
+  const fontSize = width > 900 ? 28 : 18;
+
   return (
     <Animated.View
-      style={{
-        opacity: fadeAnim ?? 1,
-        transform: [{ translateX: slideAnim }],
-      }}
-      className="flex-1 items-center justify-center w-screen mt-10 pr-5 pl-5"
+      style={[
+        styles.container,
+        {
+          opacity: fadeAnim ?? 1,
+          transform: [{ translateX: slideAnim }],
+        },
+      ]}
     >
-      <Text className="text-lg text-center">{content}</Text>
+      <Text style={[styles.text, { fontSize }]}>
+        {content !== "" ? content : "Todavía no hemos descargado esta parte."}
+      </Text>
     </Animated.View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    marginTop: 40,
+    paddingRight: 20,
+    paddingLeft: 20,
+  },
+  text: {
+    textAlign: "center",
+    maxWidth: 600,
+  },
+});
 
 export default EnglishText;

@@ -11,23 +11,31 @@ interface Props {
 
 const NavButton = ({ text, onPress, icon, disabled = false }: Props) => {
   return (
-    <View className="w-40 h-40 m-3 shadow shadow-lg">
+    <View
+      style={{
+        width: 150,
+        height: 150,
+        margin: 10,
+      }}
+    >
       <TouchableOpacity
-        className={
-          "flex-1 flex justify-center items-center rounded-xl" +
-          (disabled ? " bg-gray-400 opacity-50" : " bg-white")
-        }
         onPress={onPress}
         style={{
+          flex: 1,
+          opacity: disabled ? 0.5 : 1,
+          justifyContent: "center",
+          alignItems: "center",
           elevation: 5,
-          shadowColor: "#000",
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.25,
-          shadowRadius: 3.5,
+          shadowRadius: 4.5,
+          shadowColor: "#000",
+          backgroundColor: disabled ? "#D1D5DB" : "#FFF",
+          borderRadius: 20,
         }}
       >
         <Icon name={icon} size={80} color={"black"} />
-        <Text className="text-2xl">{text}</Text>
+        <Text style={{ fontSize: 20 }}>{text}</Text>
       </TouchableOpacity>
     </View>
   );

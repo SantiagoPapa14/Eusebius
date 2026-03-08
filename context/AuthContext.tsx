@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import * as SecureStore from "expo-secure-store";
+import { getItem, setItem, removeItem } from "./Storage";
 
 interface AuthProps {
   authState?: { token: string | null; authenticated: boolean | null };
@@ -10,7 +10,7 @@ interface AuthProps {
 }
 
 const TOKEN_KEY = "api_token";
-export const API_URL = "http://10.0.0.41:5000";
+export const API_URL = "http://api.eusebius.santiagopapa.com.ar";
 const AuthContext = createContext<AuthProps>({});
 
 export const useAuth = () => {
@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }: any) => {
 
   useEffect(() => {
     const loadToken = async () => {
-      const token = await SecureStore.getItemAsync(TOKEN_KEY);
+      const token = await getItem(TOKEN_KEY);
       if (token) {
         setAuthState({
           token,
@@ -40,54 +40,64 @@ export const AuthProvider = ({ children }: any) => {
   }, []);
 
   const register = async (email: string, password: string) => {
-    const res = await fetch(`${API_URL}/api/account/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch(`${API_URL}/api/account/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (res.ok) {
-      await login(email, password);
-    } else if (res.status === 401) {
-      alert("Incorrect email or password");
-    } else if (res.status === 400) {
-      alert("Invalid email or password");
-    } else {
-      alert("Something went wrong");
+      if (res.ok) {
+        await login(email, password);
+      } else if (res.status === 401) {
+        alert("Email o contraseña incorrectos");
+      } else if (res.status === 400) {
+        alert("Email o contraseña inválidos");
+      } else {
+        alert("Algo salió mal");
+      }
+    } catch (err) {
+      console.error("Error registering user", err);
+      alert("No se pudo conectar con el servidor");
     }
   };
 
   const login = async (email: string, password: string) => {
-    const res = await fetch(`${API_URL}/api/account/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      setAuthState({
-        token: data.token,
-        authenticated: true,
+    try {
+      const res = await fetch(`${API_URL}/api/account/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
       });
-      await SecureStore.setItemAsync(TOKEN_KEY, data.token.toString());
 
-      return data;
-    } else if (res.status === 401) {
-      alert("Incorrect email or password");
-    } else if (res.status === 400) {
-      alert("Invalid email or password");
-    } else {
-      alert("Something went wrong");
+      if (res.ok) {
+        const data = await res.json();
+        setAuthState({
+          token: data.token,
+          authenticated: true,
+        });
+
+        await setItem(TOKEN_KEY, data.token.toString());
+        return data;
+      } else if (res.status === 401) {
+        alert("Email o contraseña incorrectos");
+      } else if (res.status === 400) {
+        alert("Email o contraseña inválidos");
+      } else {
+        alert("Algo salió mal");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo conectar con el servidor");
     }
   };
 
   const logout = async () => {
-    await SecureStore.deleteItemAsync(TOKEN_KEY);
+    await removeItem(TOKEN_KEY);
     setAuthState({
       token: null,
       authenticated: false,

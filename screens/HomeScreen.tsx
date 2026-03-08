@@ -1,5 +1,5 @@
 import React from "react";
-import { View, ImageBackground, Image } from "react-native";
+import { View, ImageBackground, Image, StyleSheet } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import NavButton from "../components/home/NavButton";
 import { showMessage } from "react-native-flash-message";
@@ -7,24 +7,24 @@ import { showMessage } from "react-native-flash-message";
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { onLogout } = useAuth();
   return (
-    <View className="flex-1">
+    <View style={styles.container}>
       <ImageBackground
         source={require("../assets/MichaelWpp.jpg")}
-        className="flex-1"
+        style={[
+          styles.background,
+          { opacity: 0.2, height: "100%", width: "100%" },
+        ]}
         resizeMode="cover"
-        style={{ opacity: 0.2 }}
       />
-      <View
-        className="w-screen h-screen"
-        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
-      >
-        <View className="h-1/5 mt-16">
+      <View style={styles.overlay}>
+        <View style={styles.logoContainer}>
           <Image
             source={require("../assets/LogoHQ.png")}
-            className="w-full h-full object-cover"
+            style={styles.logo}
+            resizeMode="contain"
           />
         </View>
-        <View className="flex-1 flex-wrap flex-row justify-center items-center">
+        <View style={styles.navContainer}>
           <NavButton
             text="Lecturas"
             onPress={() => navigation.navigate("Lecturas")}
@@ -36,7 +36,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             onPress={() =>
               showMessage({
                 type: "info",
-                message: "Estoy trabajando en ello!",
+                message: "Esta funcionalidad no esta disponible por el momento",
               })
             }
             icon="user"
@@ -66,5 +66,42 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
+  background: {
+    flex: 1,
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
+  },
+  logoContainer: {
+    height: "20%",
+    marginTop: 32,
+  },
+  logo: {
+    width: "100%",
+    height: "100%",
+  },
+  navContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginHorizontal: "5%",
+    alignItems: "center",
+    maxWidth: 600,
+    alignSelf: "center",
+  },
+});
 
 export default HomeScreen;
