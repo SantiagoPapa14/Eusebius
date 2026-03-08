@@ -10,7 +10,7 @@ interface AuthProps {
 }
 
 const TOKEN_KEY = "api_token";
-export const API_URL = "http://10.0.0.47:5139";
+export const API_URL = "http://api.eusebius.santiagopapa.com.ar";
 const AuthContext = createContext<AuthProps>({});
 
 export const useAuth = () => {
